@@ -20,9 +20,10 @@ void UWorldPosition::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Warning, TEXT("This component is attached to: %s"), *GetOwner()->GetName());
+	FString ObjectName = GetOwner()->GetName();
+	FString ObjectPosition = GetOwner()->GetActorLocation().ToString();
 
-
+	UE_LOG(LogTemp, Warning, TEXT("%s's position is: %s"), *ObjectName, *ObjectPosition);
 	
 }
 
