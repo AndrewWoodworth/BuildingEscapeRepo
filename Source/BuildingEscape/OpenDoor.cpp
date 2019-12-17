@@ -3,7 +3,6 @@
 
 #include "OpenDoor.h"
 #include "GameFramework/Actor.h"
-#include "Containers/UnrealString.h"
 
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
@@ -21,12 +20,8 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-	float DoorRotation = 0.f;
-	FRotator OpenDoor = GetOwner()->GetActorRotation();
-	OpenDoor.Yaw = DoorRotation;
-
-	GetOwner()->SetActorRotation(OpenDoor);
+	TargetYaw = -90.f;
+	FRotator OpenDoor = FRotator(0.f, 0.f, 0.f);
 }
 
 
@@ -35,6 +30,11 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	UE_LOG(LogTemp, Warning, TEXT("Object Yaw is: %f"), GetOwner()->GetActorRotation().Yaw);
+	
+	float StartingYaw = GetOwner()->GetActorRotation().Yaw;
+	OpenDoor.Yaw = FMath::Lerp(StartingYaw, TargetYaw, 0.02f);
+
+	GetOwner()->SetActorRotation(OpenDoor);
 }
 
