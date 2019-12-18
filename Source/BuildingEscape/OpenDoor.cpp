@@ -34,7 +34,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 	UE_LOG(LogTemp, Warning, TEXT("Object Yaw is: %f"), CurrentYaw);
 
-	DoorRotation.Yaw = FMath::Lerp(CurrentYaw, TargetYaw, 0.02f);
+	DoorRotation.Yaw = FMath::Lerp(CurrentYaw, TargetYaw, 1.f * DeltaTime);
 	CurrentYaw = DoorRotation.Yaw;
 
 	GetOwner()->SetActorRotation(DoorRotation);
