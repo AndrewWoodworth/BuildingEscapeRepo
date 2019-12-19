@@ -32,5 +32,4 @@ public:
 	float InitialYaw;
 	float CurrentYaw;
 	FRotator DoorRotation;
-
 };
