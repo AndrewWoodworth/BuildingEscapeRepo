@@ -25,6 +25,11 @@ void UOpenDoor::BeginPlay()
 	InitialYaw = DoorRotation.Yaw;
 	TargetYaw += InitialYaw;
 	CurrentYaw = InitialYaw;
+
+	if(!PressurePlate)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s has an open door component attached, but no PressuePlate set."), *GetOwner()->GetName());
+	}
 }
 
 
@@ -33,7 +38,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (PressurePlate->IsOverlappingActor(ActorThatOpens))
+	if (PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpens))
 	{
 		OpenDoor(DeltaTime);
 	}
