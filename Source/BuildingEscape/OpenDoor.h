@@ -31,16 +31,26 @@ public:
 
 	// Member Variables
 
+	float DoorLastOpened = 0.f;
 	float InitialYaw;
 	float CurrentYaw;
 	FRotator DoorRotation;
 	
 	UPROPERTY(EditAnyWhere)
-	float AmountOfRotation = 90.f;
+	float OpenAngle = 90.f;
 	
 	UPROPERTY(EditAnyWhere)
 	ATriggerVolume* PressurePlate;
 
 	UPROPERTY(EditAnyWhere)
 	AActor* ActorThatOpens;
+
+	UPROPERTY(EditAnyWhere)
+	float DoorOpenSpeed = 0.5f;
+
+	UPROPERTY(EditAnyWhere)
+	float DoorCloseSpeed = 1.3f;
+
+	UPROPERTY(EditAnyWhere)
+	float DoorCloseDelay = 0.4f;
 };
