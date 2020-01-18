@@ -25,7 +25,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 	void OpenDoor(float DeltaTime);
+	void CloseDoor(float DeltaTime);
 
 	// Member Variables
 
@@ -34,7 +36,7 @@ public:
 	FRotator DoorRotation;
 	
 	UPROPERTY(EditAnyWhere)
-	float TargetYaw = 90.f;
+	float AmountOfRotation = 90.f;
 	
 	UPROPERTY(EditAnyWhere)
 	ATriggerVolume* PressurePlate;

@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 #include "OpenDoor.h"
 #include "GameFramework/Actor.h"
 #include "Containers/UnrealString.h"
@@ -22,14 +24,17 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 
 	DoorRotation = GetOwner()->GetActorRotation();
+
 	InitialYaw = DoorRotation.Yaw;
-	TargetYaw += InitialYaw;
+	AmountOfRotation += InitialYaw;
 	CurrentYaw = InitialYaw;
 
 	if(!PressurePlate)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s has an open door component attached, but no PressuePlate set."), *GetOwner()->GetName());
+		UE_LOG(LogTemp, Error, TEXT("%s has an OpenDoor component attached, but no PressuePlate set."), *GetOwner()->GetName());
 	}
+
+	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 
@@ -41,15 +46,31 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	if (PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpens))
 	{
 		OpenDoor(DeltaTime);
+	} 
+	else if(CurrentYaw != InitialYaw)
+	{
+		// Closes the door
+		CloseDoor(DeltaTime);
 	}
 }
 
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
 	// Print rotation to log.
-	// UE_LOG(LogTemp, Warning, TEXT("Object Yaw is: %s"), *FString::Printf(TEXT("%.2f"), CurrentYaw));
+	// UE_LOG(LogTemp, Warning, TEXT("Object Yaw is: %s"), *FString::Printf(TEXT("%.2f"), ValueToLerp));
 
-	DoorRotation.Yaw = FMath::Lerp(CurrentYaw, TargetYaw, 1.f * DeltaTime);
+	DoorRotation.Yaw = FMath::Lerp(CurrentYaw, AmountOfRotation, 1.f * DeltaTime);
+	CurrentYaw = DoorRotation.Yaw;
+
+	GetOwner()->SetActorRotation(DoorRotation);
+}
+
+void UOpenDoor::CloseDoor(float DeltaTime)
+{
+	// Print rotation to log.
+	// UE_LOG(LogTemp, Warning, TEXT("Object Yaw is: %s"), *FString::Printf(TEXT("%.2f"), ValueToLerp));
+
+	DoorRotation.Yaw = FMath::Lerp(CurrentYaw, InitialYaw, 1.f * DeltaTime);
 	CurrentYaw = DoorRotation.Yaw;
 
 	GetOwner()->SetActorRotation(DoorRotation);
