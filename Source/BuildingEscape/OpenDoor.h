@@ -25,12 +25,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
 	void OpenDoor(float DeltaTime);
 	void CloseDoor(float DeltaTime);
+	float TotalMassOfActors() const;
 
 	// Member Variables
-
 	float DoorLastOpened = 0.f;
 	float InitialYaw;
 	float CurrentYaw;
@@ -53,4 +53,7 @@ public:
 
 	UPROPERTY(EditAnyWhere)
 	float DoorCloseDelay = 0.4f;
+
+	UPROPERTY(EditAnyWhere)
+	float MassToOpenDoor = 50.f;
 };
