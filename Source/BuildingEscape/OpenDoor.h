@@ -38,12 +38,6 @@ public:
 	
 	UPROPERTY(EditAnyWhere)
 	float OpenAngle = 90.f;
-	
-	UPROPERTY(EditAnyWhere)
-	ATriggerVolume* PressurePlate;
-
-	UPROPERTY(EditAnyWhere)
-	AActor* ActorThatOpens;
 
 	UPROPERTY(EditAnyWhere)
 	float DoorOpenSpeed = 0.5f;
@@ -56,4 +50,7 @@ public:
 
 	UPROPERTY(EditAnyWhere)
 	float MassToOpenDoor = 50.f;
+
+	UPROPERTY(EditAnyWhere)
+	ATriggerVolume* PressurePlate = nullptr;
 };
