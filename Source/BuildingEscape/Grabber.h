@@ -33,7 +33,10 @@ private:
 	FRotator PlayerViewPointRotation;
 	FVector LineTraceEnd;
 
+	UPROPERTY(EditAnyWhere)
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+
+	UPROPERTY(EditAnyWhere)
 	UInputComponent* InputComponent = nullptr;
 
 	void Grab();

@@ -28,6 +28,8 @@ public:
 
 	void OpenDoor(float DeltaTime);
 	void CloseDoor(float DeltaTime);
+	void CheckForPressurePlate() const;
+	void FindAudioComponent();
 	float TotalMassOfActors() const;
 
 	// Member Variables
@@ -53,4 +55,7 @@ public:
 
 	UPROPERTY(EditAnyWhere)
 	ATriggerVolume* PressurePlate = nullptr;
+
+	UPROPERTY(EditAnyWhere)
+	UAudioComponent* AudioComponent = nullptr;
 };
