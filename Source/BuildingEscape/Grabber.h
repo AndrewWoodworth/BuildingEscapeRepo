@@ -29,6 +29,10 @@ private:
 	// Member variables
 	float Reach = 100.f;
 
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	FVector LineTraceEnd;
+
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 	UInputComponent* InputComponent = nullptr;
 
@@ -39,5 +43,8 @@ private:
 	void DrawReachDebug();
 
 	// Return the first actor within reach with a physics body
-	FHitResult GetFirstPhysicsBodyInReach() const;
+	FHitResult GetFirstPhysicsBodyInReach();
+
+	// Return the line trace end
+	FVector GetLineTraceEnd();
 };
