@@ -77,11 +77,13 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 
 # Starter Content Ignored
-
 Content/StarterContent/*
 
 VSCode Files
 /.vscode/*
 BuildingEscape.code-workspace
 
+# Folders added throughout making the project that do not need
+# to be backed up
 ProjectZips
+Content/MedievalDungeon/
