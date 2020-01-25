@@ -33,6 +33,8 @@ public:
 	float TotalMassOfActors() const;
 
 	// Member Variables
+	bool bCanPlayOpenDoorSound = true;
+	bool bCanPlayCloseDoorSound = false;
 	float DoorLastOpened = 0.f;
 	float InitialYaw;
 	float CurrentYaw;
@@ -45,10 +47,10 @@ public:
 	float DoorOpenSpeed = 0.5f;
 
 	UPROPERTY(EditAnyWhere)
-	float DoorCloseSpeed = 1.3f;
+	float DoorCloseSpeed = 1.5f;
 
 	UPROPERTY(EditAnyWhere)
-	float DoorCloseDelay = 0.4f;
+	float DoorCloseDelay = 0.3f;
 
 	UPROPERTY(EditAnyWhere)
 	float MassToOpenDoor = 50.f;

@@ -82,9 +82,14 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 	GetOwner()->SetActorRotation(DoorRotation);
 
 	// Play door sound
+	bCanPlayCloseDoorSound = true;
 	if(!AudioComponent) {return;}
-	AudioComponent->Play();
-}
+	if (bCanPlayOpenDoorSound)
+	{
+		AudioComponent->Play();
+		bCanPlayOpenDoorSound = false;
+	}
+}	
 
 void UOpenDoor::CloseDoor(float DeltaTime)
 {
@@ -94,8 +99,13 @@ void UOpenDoor::CloseDoor(float DeltaTime)
 	GetOwner()->SetActorRotation(DoorRotation);
 
 	// Play door sound
+	bCanPlayOpenDoorSound = true;
 	if(!AudioComponent) {return;}
-	AudioComponent->Play();
+	if (bCanPlayCloseDoorSound)
+	{
+		AudioComponent->Play();
+		bCanPlayCloseDoorSound = false;
+	}
 }
 
 float UOpenDoor::TotalMassOfActors() const
