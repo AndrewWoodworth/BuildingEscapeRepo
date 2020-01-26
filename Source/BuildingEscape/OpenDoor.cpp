@@ -120,7 +120,10 @@ float UOpenDoor::TotalMassOfActors() const
 	// Add up their masses
 	for (AActor* Actor : OverlappingActors)
 	{
-		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		if (Actor->IsRootComponentMovable())
+		{
+			TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		}
 	}
 	
 	return TotalMass;
