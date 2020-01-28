@@ -25,6 +25,8 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
+
 	DoorRotation = GetOwner()->GetActorRotation();
 	InitialYaw = DoorRotation.Yaw;
 	OpenAngle += InitialYaw;
@@ -57,7 +59,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (TotalMassOfActors() > MassToOpenDoor)
+	if (TotalMassOfActors() >= MassToOpenDoor || PressurePlate->IsOverlappingActor(ActorThatOpens))
 	{
 		OpenDoor(DeltaTime);
 		DoorLastOpened = GetWorld()->GetTimeSeconds();
@@ -117,7 +119,7 @@ float UOpenDoor::TotalMassOfActors() const
 	if(!PressurePlate) {return TotalMass;}
 	PressurePlate->GetOverlappingActors(OUT OverlappingActors);	
 
-	// Add up their masses
+	// Add up overlapping actors masses
 	for (AActor* Actor : OverlappingActors)
 	{
 		if (Actor->IsRootComponentMovable())

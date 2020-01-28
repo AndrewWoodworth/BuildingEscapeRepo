@@ -39,6 +39,9 @@ public:
 	float InitialYaw;
 	float CurrentYaw;
 	FRotator DoorRotation;
+
+	UPROPERTY(EditAnyWhere)
+	AActor* ActorThatOpens = nullptr;
 	
 	UPROPERTY(EditAnyWhere)
 	float OpenAngle = 90.f;

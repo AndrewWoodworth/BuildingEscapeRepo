@@ -25,13 +25,34 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+	void MoveBackward(float Value);
+	void MoveLeft(float Value);
+
+	void Grab();
+	void Release();
+
+	// Return the line trace end
+	FVector GetLineTraceEnd();
+
 private:
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	FVector LineTraceEnd;
+
+	float TurnSpeed = 45.f;
+	float LookUpSpeed = 45.f;
+
+	UPROPERTY(EditAnyWhere)
+	float PlayerMass = 60.f;
+
 	UPROPERTY(EditAnyWhere)
 	float Reach = 200.f;
 
 	UPROPERTY()
-	USceneComponent* GrabPosition;
+	USceneComponent* GrabTransform = nullptr;
 
 	UPROPERTY()
-	class UPhysicsHandleComponent* PhysicsHandle;
+	class UPhysicsHandleComponent* PhysicsHandle = nullptr;
 };
