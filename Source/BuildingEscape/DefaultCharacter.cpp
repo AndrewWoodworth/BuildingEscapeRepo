@@ -9,6 +9,11 @@ ADefaultCharacter::ADefaultCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
+	GrabPosition = CreateDefaultSubobject<USceneComponent>(TEXT("GrabPosition"));
+
+	GrabPosition->SetupAttachment(RootComponent);
+	GrabPosition->SetRelativeLocation(FVector(Reach, 0.f, 70.f));
 }
 
 // Called when the game starts or when spawned
@@ -22,7 +27,7 @@ void ADefaultCharacter::BeginPlay()
 void ADefaultCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 // Called to bind functionality to input
