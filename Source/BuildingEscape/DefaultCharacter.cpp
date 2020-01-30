@@ -101,7 +101,7 @@ void ADefaultCharacter::Grab()
 		const FVector LineTraceStart = GetPawnViewLocation();
 		const FVector LineTraceEnd = LineTraceStart + GetViewRotation().Vector() * Reach;
 
-		FHitResult HitResult;○○
+		FHitResult HitResult;
 
 	return LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 }
