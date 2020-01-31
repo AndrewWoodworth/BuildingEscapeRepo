@@ -32,8 +32,10 @@ protected:
 
 	void Grab();
 	void Release();
+	void ChangeGrabState();
 
 private:
+	bool bCanBeGrabbing = false;
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
 	FVector LineTraceEnd;

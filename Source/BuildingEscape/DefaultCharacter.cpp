@@ -38,6 +38,15 @@ void ADefaultCharacter::Tick(float DeltaTime)
 	{
 		PhysicsHandle->SetTargetLocationAndRotation(GetLineTraceEnd(), GrabTransform->GetComponentRotation());
 	}
+	
+	if (bCanBeGrabbing)
+	{
+		Grab();
+	}
+	else if (!bCanBeGrabbing)
+	{
+		Release();
+	}
 }
 
 // Called to bind functionality to input
@@ -55,8 +64,7 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ACharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ACharacter::AddControllerYawInput);
 
-	PlayerInputComponent->BindAction(TEXT("Grab"), IE_Pressed, this, &ADefaultCharacter::Grab);
-	PlayerInputComponent->BindAction(TEXT("Grab"), IE_Released, this, &ADefaultCharacter::Release);
+	PlayerInputComponent->BindAction(TEXT("Grab"), IE_Pressed, this, &ADefaultCharacter::ChangeGrabState);
 }
 
 void ADefaultCharacter::MoveForward(float Value)
@@ -126,6 +134,13 @@ void ADefaultCharacter::Release()
 		PhysicsHandle->ReleaseComponent();
 	}
 }
+
+void ADefaultCharacter::ChangeGrabState()
+{
+	bCanBeGrabbing = !bCanBeGrabbing;
+}
+
+
 
 FVector ADefaultCharacter::GetLineTraceEnd()
 {
