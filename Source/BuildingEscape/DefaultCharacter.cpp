@@ -115,6 +115,21 @@ void ADefaultCharacter::Grab()
 			TraceParams
 		);
 
+		/* FCollisionQueryParams TraceParams2(FName(TEXT("RotatableTrace")), false, this);
+		FHitResult HitResult2;
+
+		GetWorld()->LineTraceSingleByObjectType(
+			OUT HitResult2,
+			PlayerViewPointLocation,
+			GetLineTraceEnd(),
+			FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),
+			TraceParams2
+		);
+
+		AActor* ActorHit2 = HitResult2.GetActor();
+		if (!ActorHit2) {return;}
+		UE_LOG(LogTemp, Warning, TEXT("%s was hit by a ray"), *ActorHit2->GetName()); */
+
 		AActor* ActorHit = HitResult.GetActor();
 		UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
 		if (ActorHit && PhysicsHandle && ComponentToGrab)
