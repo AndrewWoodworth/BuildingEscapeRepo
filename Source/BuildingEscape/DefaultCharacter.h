@@ -33,9 +33,6 @@ protected:
 	void Grab();
 	void Release();
 
-	// Return the line trace end
-	FVector GetLineTraceEnd();
-
 private:
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
@@ -55,4 +52,7 @@ private:
 
 	UPROPERTY()
 	class UPhysicsHandleComponent* PhysicsHandle = nullptr;
+
+	// Return the ending point for line-tracing
+	FVector GetLineTraceEnd();
 };

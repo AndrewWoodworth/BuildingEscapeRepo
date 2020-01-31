@@ -4,8 +4,8 @@
 #include "Components/InputComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-#include "Components/CapsuleComponent.h"
 
 #define OUT
 
@@ -97,13 +97,34 @@ void ADefaultCharacter::Grab()
 	{
 		// Trace a line from center of players viewport and get the HitResult of the line trace if there is one.
 		FCollisionQueryParams TraceParams(NAME_None, false, this);
-
-		const FVector LineTraceStart = GetPawnViewLocation();
-		const FVector LineTraceEnd = LineTraceStart + GetViewRotation().Vector() * Reach;
-
 		FHitResult HitResult;
 
-	return LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
+		GetWorld()->LineTraceSingleByObjectType(
+			OUT HitResult,
+			PlayerViewPointLocation,
+			GetLineTraceEnd(),
+			FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+			TraceParams
+		);
+
+		AActor* ActorHit = HitResult.GetActor();
+		UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
+		if (ActorHit && PhysicsHandle && ComponentToGrab)
+		{
+			ComponentToGrab->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+			GrabTransform->SetWorldRotation(ComponentToGrab->GetComponentRotation());
+			PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, HitResult.BoneName, GetLineTraceEnd(), ComponentToGrab->GetComponentRotation());
+		}
+	}
+}
+
+void ADefaultCharacter::Release()
+{
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+		PhysicsHandle->ReleaseComponent();
+	}
 }
 
 FVector ADefaultCharacter::GetLineTraceEnd()
