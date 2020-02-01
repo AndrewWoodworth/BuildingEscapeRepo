@@ -30,9 +30,10 @@ protected:
 	void MoveBackward(float Value);
 	void MoveLeft(float Value);
 
+	void Interact();
 	void Grab();
-	void Release();
-	void ChangeGrabState();
+	void ReleaseGrabbed();
+	void RotateObject();
 
 private:
 	bool bCanBeGrabbing = false;

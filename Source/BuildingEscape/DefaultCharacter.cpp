@@ -38,15 +38,6 @@ void ADefaultCharacter::Tick(float DeltaTime)
 	{
 		PhysicsHandle->SetTargetLocationAndRotation(GetLineTraceEnd(), GrabTransform->GetComponentRotation());
 	}
-	
-	if (bCanBeGrabbing)
-	{
-		Grab();
-	}
-	else if (!bCanBeGrabbing)
-	{
-		Release();
-	}
 }
 
 // Called to bind functionality to input
@@ -64,7 +55,7 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ACharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ACharacter::AddControllerYawInput);
 
-	PlayerInputComponent->BindAction(TEXT("Grab"), IE_Pressed, this, &ADefaultCharacter::ChangeGrabState);
+	PlayerInputComponent->BindAction(TEXT("Grab"), IE_Pressed, this, &ADefaultCharacter::Interact);
 }
 
 void ADefaultCharacter::MoveForward(float Value)
@@ -99,67 +90,87 @@ void ADefaultCharacter::MoveLeft(float Value)
 	}
 }
 
-void ADefaultCharacter::Grab()
+void ADefaultCharacter::Interact()
 {
 	if (!PhysicsHandle->GrabbedComponent)
 	{
-		// Trace a line from center of players viewport and get the HitResult of the line trace if there is one.
-		FCollisionQueryParams TraceParams(NAME_None, false, this);
-		FHitResult HitResult;
-
-		GetWorld()->LineTraceSingleByObjectType(
-			OUT HitResult,
-			PlayerViewPointLocation,
-			GetLineTraceEnd(),
-			FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
-			TraceParams
-		);
-
-		/* FCollisionQueryParams TraceParams2(FName(TEXT("RotatableTrace")), false, this);
-		FHitResult HitResult2;
-
-		GetWorld()->LineTraceSingleByObjectType(
-			OUT HitResult2,
-			PlayerViewPointLocation,
-			GetLineTraceEnd(),
-			FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),
-			TraceParams2
-		);
-
-		AActor* ActorHit2 = HitResult2.GetActor();
-		if (!ActorHit2) {return;}
-		UE_LOG(LogTemp, Warning, TEXT("%s was hit by a ray"), *ActorHit2->GetName()); */
-
-		AActor* ActorHit = HitResult.GetActor();
-		UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
-		if (ActorHit && PhysicsHandle && ComponentToGrab)
-		{
-			ComponentToGrab->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-			GrabTransform->SetWorldRotation(ComponentToGrab->GetComponentRotation());
-			PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, HitResult.BoneName, GetLineTraceEnd(), ComponentToGrab->GetComponentRotation());
-		}
+		Grab();
+		RotateObject();
 	}
-}
-
-void ADefaultCharacter::Release()
-{
-	if (PhysicsHandle->GrabbedComponent)
+	else if (PhysicsHandle->GrabbedComponent)
 	{
-		PhysicsHandle->GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
-		PhysicsHandle->ReleaseComponent();
+		ReleaseGrabbed();
 	}
 }
 
-void ADefaultCharacter::ChangeGrabState()
+void ADefaultCharacter::Grab()
 {
-	bCanBeGrabbing = !bCanBeGrabbing;
+	// Trace a line from center of players viewport and get the HitResult of the line trace if there is one.
+	FCollisionQueryParams TraceParams(NAME_None, false, this);
+	FHitResult HitResult;
+
+	GetWorld()->LineTraceSingleByObjectType(
+		OUT HitResult,
+		PlayerViewPointLocation,
+		GetLineTraceEnd(),
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		TraceParams
+	);
+
+	AActor* ActorHit = HitResult.GetActor();
+	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
+	if (ActorHit && PhysicsHandle && ComponentToGrab)
+	{
+		ComponentToGrab->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		GrabTransform->SetWorldRotation(ComponentToGrab->GetComponentRotation());
+		PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, HitResult.BoneName, GetLineTraceEnd(), ComponentToGrab->GetComponentRotation());
+	}
 }
 
-
+void ADefaultCharacter::ReleaseGrabbed()
+{
+	PhysicsHandle->GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	PhysicsHandle->ReleaseComponent();
+}
 
 FVector ADefaultCharacter::GetLineTraceEnd()
 {
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
 
 	return LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
+}
+
+void ADefaultCharacter::RotateObject()
+{
+	UE_LOG(LogTemp, Error, TEXT("RotateObject is activated."));
+	FHitResult HitResult;
+
+	// Just some tests
+	/* GetWorld()->LineTraceSingleByObjectType(
+		OUT HitResult2,
+		PlayerViewPointLocation,
+		GetLineTraceEnd(),
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),
+		TraceParams2
+	); */
+
+	GetWorld()->LineTraceSingleByObjectType(
+		OUT HitResult,
+		PlayerViewPointLocation,
+		GetLineTraceEnd(),
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),
+		FCollisionQueryParams(FName(TEXT("")), false, this)
+	);
+
+	AActor* ActorHit = HitResult.GetActor();
+	UPrimitiveComponent* ComponentHit = HitResult.GetComponent();
+
+	if (!ActorHit || !ComponentHit) {return;}
+	UE_LOG(LogTemp, Warning, TEXT("%s actor was hit by a ray."), *ActorHit->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("%s component was hit by a ray."), *ComponentHit->GetName());
+	
+	const FRotator AmountOfRotation = FRotator(90);
+	const FRotator NewActorRotation = ActorHit->GetActorRotation() + AmountOfRotation;
+
+	ActorHit->SetActorRotation(FQuat(NewActorRotation.Quaternion()));
 }
