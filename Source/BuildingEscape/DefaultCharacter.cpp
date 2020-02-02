@@ -94,8 +94,8 @@ void ADefaultCharacter::Interact()
 {
 	if (!PhysicsHandle->GrabbedComponent)
 	{
-		Grab();
 		RotateObject();
+		Grab();
 	}
 	else if (PhysicsHandle->GrabbedComponent)
 	{
@@ -142,7 +142,7 @@ FVector ADefaultCharacter::GetLineTraceEnd()
 
 void ADefaultCharacter::RotateObject()
 {
-	UE_LOG(LogTemp, Error, TEXT("RotateObject is activated."));
+	UE_LOG(LogTemp, Warning, TEXT("RotateObject is activated."));
 	FHitResult HitResult;
 
 	// Just some tests
