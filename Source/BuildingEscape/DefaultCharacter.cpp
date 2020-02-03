@@ -143,6 +143,8 @@ FVector ADefaultCharacter::GetLineTraceEnd()
 void ADefaultCharacter::RotateObject()
 {
 	UE_LOG(LogTemp, Warning, TEXT("RotateObject is activated."));
+
+	FCollisionQueryParams TraceParams(NAME_None, false, this);
 	FHitResult HitResult;
 
 	// Just some tests
@@ -159,7 +161,7 @@ void ADefaultCharacter::RotateObject()
 		PlayerViewPointLocation,
 		GetLineTraceEnd(),
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),
-		FCollisionQueryParams(FName(TEXT("")), false, this)
+		TraceParams
 	);
 
 	AActor* ActorHit = HitResult.GetActor();
