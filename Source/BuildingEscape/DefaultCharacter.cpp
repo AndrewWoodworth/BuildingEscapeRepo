@@ -160,7 +160,7 @@ void ADefaultCharacter::RotateObject()
 		OUT HitResult,
 		PlayerViewPointLocation,
 		GetLineTraceEnd(),
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel2),
 		TraceParams
 	);
 
@@ -171,7 +171,7 @@ void ADefaultCharacter::RotateObject()
 	UE_LOG(LogTemp, Warning, TEXT("%s actor was hit by a ray."), *ActorHit->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("%s component was hit by a ray."), *ComponentHit->GetName());
 	
-	const FRotator AmountOfRotation = FRotator(90);
+	const FRotator AmountOfRotation = FRotator(0.f, 90.f, 0.f);
 	const FRotator NewActorRotation = ActorHit->GetActorRotation() + AmountOfRotation;
 
 	ActorHit->SetActorRotation(FQuat(NewActorRotation.Quaternion()));
