@@ -36,6 +36,7 @@ protected:
 	void RotateObject();
 
 private:
+	TArray<AActor*> ObjectsToRotate;
 	bool bCanBeGrabbing = false;
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;

@@ -38,6 +38,20 @@ void ADefaultCharacter::Tick(float DeltaTime)
 	{
 		PhysicsHandle->SetTargetLocationAndRotation(GetLineTraceEnd(), GrabTransform->GetComponentRotation());
 	}
+
+	if (ObjectsToRotate.Num() > 0)
+	{
+		for (AActor* Actor : ObjectsToRotate)
+		{
+			FRotator ActorRotation = Actor->GetActorRotation();
+			float AmountOfRotation = ActorRotation.Yaw + 90.f;
+
+			ActorRotation.Yaw = FMath::Lerp(ActorRotation.Yaw, AmountOfRotation, .8f * DeltaTime);
+
+			Actor->SetActorRotation(FQuat(ActorRotation.Quaternion()));
+
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -170,9 +184,6 @@ void ADefaultCharacter::RotateObject()
 	if (!ActorHit || !ComponentHit) {return;}
 	UE_LOG(LogTemp, Warning, TEXT("%s actor was hit by a ray."), *ActorHit->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("%s component was hit by a ray."), *ComponentHit->GetName());
-	
-	const FRotator AmountOfRotation = FRotator(0.f, 90.f, 0.f);
-	const FRotator NewActorRotation = ActorHit->GetActorRotation() + AmountOfRotation;
 
-	ActorHit->SetActorRotation(FQuat(NewActorRotation.Quaternion()));
+	ObjectsToRotate.Emplace(ActorHit);
 }
