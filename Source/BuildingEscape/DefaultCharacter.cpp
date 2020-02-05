@@ -3,6 +3,7 @@
 #include "DefaultCharacter.h"
 #include "Components/InputComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "Containers/UnrealString.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
@@ -39,19 +40,7 @@ void ADefaultCharacter::Tick(float DeltaTime)
 		PhysicsHandle->SetTargetLocationAndRotation(GetLineTraceEnd(), GrabTransform->GetComponentRotation());
 	}
 
-	if (ObjectsToRotate.Num() > 0)
-	{
-		for (AActor* Actor : ObjectsToRotate)
-		{
-			FRotator ActorRotation = Actor->GetActorRotation();
-			float AmountOfRotation = ActorRotation.Yaw + 90.f;
-
-			ActorRotation.Yaw = FMath::Lerp(ActorRotation.Yaw, AmountOfRotation, .8f * DeltaTime);
-
-			Actor->SetActorRotation(FQuat(ActorRotation.Quaternion()));
-
-		}
-	}
+	RotateObjects(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -108,7 +97,7 @@ void ADefaultCharacter::Interact()
 {
 	if (!PhysicsHandle->GrabbedComponent)
 	{
-		RotateObject();
+		CheckForObjectsToRotate();
 		Grab();
 	}
 	else if (PhysicsHandle->GrabbedComponent)
@@ -154,7 +143,7 @@ FVector ADefaultCharacter::GetLineTraceEnd()
 	return LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 }
 
-void ADefaultCharacter::RotateObject()
+void ADefaultCharacter::CheckForObjectsToRotate()
 {
 	UE_LOG(LogTemp, Warning, TEXT("RotateObject is activated."));
 
@@ -185,5 +174,25 @@ void ADefaultCharacter::RotateObject()
 	UE_LOG(LogTemp, Warning, TEXT("%s actor was hit by a ray."), *ActorHit->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("%s component was hit by a ray."), *ComponentHit->GetName());
 
-	ObjectsToRotate.Emplace(ActorHit);
+	ObjectToRotate = ActorHit;
+	ActorRotation = ObjectToRotate->GetActorRotation();
+	AmountOfRotation = ActorRotation.Yaw + 90.f;
+	float OriginalActorYaw = ActorRotation.Yaw;
+	bIsRotating = true
+
+	if ((OriginalActorYaw + AmountOfRotation) - ActorRotation.Yaw < 0.00001f)
+	{
+		bIsRotating = false
+	}
+}
+
+void ADefaultCharacter::RotateObjects(float DeltaTime)
+{
+	if (ObjectToRotate)
+	{
+		ActorRotation.Yaw = FMath::Lerp(ActorRotation.Yaw, AmountOfRotation, .8f * DeltaTime);
+		UE_LOG(LogTemp, Warning, TEXT("Object Yaw is: %s"), *FString::Printf(TEXT("%.2f"), ActorRotation.Yaw));
+
+		ObjectToRotate->SetActorRotation(ActorRotation);
+	}
 }

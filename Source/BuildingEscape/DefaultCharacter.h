@@ -33,11 +33,15 @@ protected:
 	void Interact();
 	void Grab();
 	void ReleaseGrabbed();
-	void RotateObject();
+	void CheckForObjectsToRotate();
+	void RotateObjects(float DeltaTime);
 
 private:
-	TArray<AActor*> ObjectsToRotate;
+	FRotator ActorRotation;
+	float AmountOfRotation;
+	bool bIsRotating = false
 	bool bCanBeGrabbing = false;
+	AActor* ObjectToRotate = nullptr;
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
 	FVector LineTraceEnd;
