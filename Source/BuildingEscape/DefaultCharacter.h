@@ -38,8 +38,10 @@ protected:
 
 private:
 	FRotator ActorRotation;
-	float AmountOfRotation;
-	bool bIsRotating = false
+	float TargetRotation;
+	float OriginalActorYaw;
+	float YawToBeLerped;
+	bool bIsRotating = false;
 	bool bCanBeGrabbing = false;
 	AActor* ObjectToRotate = nullptr;
 	FVector PlayerViewPointLocation;
@@ -48,6 +50,9 @@ private:
 
 	float TurnSpeed = 45.f;
 	float LookUpSpeed = 45.f;
+
+	UPROPERTY(EditAnyWhere)
+	float AmountOfRotation = 90.f;
 
 	UPROPERTY(EditAnyWhere)
 	float PlayerMass = 60.f;

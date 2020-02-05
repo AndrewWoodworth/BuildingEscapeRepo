@@ -150,15 +150,6 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 	FCollisionQueryParams TraceParams(NAME_None, false, this);
 	FHitResult HitResult;
 
-	// Just some tests
-	/* GetWorld()->LineTraceSingleByObjectType(
-		OUT HitResult2,
-		PlayerViewPointLocation,
-		GetLineTraceEnd(),
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),
-		TraceParams2
-	); */
-
 	GetWorld()->LineTraceSingleByObjectType(
 		OUT HitResult,
 		PlayerViewPointLocation,
@@ -170,29 +161,42 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 	AActor* ActorHit = HitResult.GetActor();
 	UPrimitiveComponent* ComponentHit = HitResult.GetComponent();
 
+
+	// ----------Test Code---------
 	if (!ActorHit || !ComponentHit) {return;}
 	UE_LOG(LogTemp, Warning, TEXT("%s actor was hit by a ray."), *ActorHit->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("%s component was hit by a ray."), *ComponentHit->GetName());
 
-	ObjectToRotate = ActorHit;
-	ActorRotation = ObjectToRotate->GetActorRotation();
-	AmountOfRotation = ActorRotation.Yaw + 90.f;
-	float OriginalActorYaw = ActorRotation.Yaw;
-	bIsRotating = true
-
-	if ((OriginalActorYaw + AmountOfRotation) - ActorRotation.Yaw < 0.00001f)
+	if (!bIsRotating && ActorHit)
 	{
-		bIsRotating = false
+		ObjectToRotate = ActorHit;
+		ActorRotation = ObjectToRotate->GetActorRotation();
+		TargetRotation = ActorRotation.Yaw + AmountOfRotation;
+		YawToBeLerped = ActorRotation.Yaw;
+		OriginalActorYaw = ActorRotation.Yaw;
+		bIsRotating = true;
 	}
 }
 
 void ADefaultCharacter::RotateObjects(float DeltaTime)
 {
-	if (ObjectToRotate)
+	if (ObjectToRotate && bIsRotating)
 	{
-		ActorRotation.Yaw = FMath::Lerp(ActorRotation.Yaw, AmountOfRotation, .8f * DeltaTime);
+		ActorRotation.Yaw = FMath::Lerp(ActorRotation.Yaw, TargetRotation, 1.1f * DeltaTime);
+		// ----------Test Code----------
 		UE_LOG(LogTemp, Warning, TEXT("Object Yaw is: %s"), *FString::Printf(TEXT("%.2f"), ActorRotation.Yaw));
 
 		ObjectToRotate->SetActorRotation(ActorRotation);
-	}
+
+		if ((OriginalActorYaw + AmountOfRotation) - ActorRotation.Yaw < .5f)
+		{
+			ActorRotation.Yaw = OriginalActorYaw + AmountOfRotation;
+			ObjectToRotate->SetActorRotation(ActorRotation);
+			UE_LOG(LogTemp, Warning, TEXT("Final object Yaw is: %s"), *FString::Printf(TEXT("%.2f"), ActorRotation.Yaw));
+			bIsRotating = false;
+
+			// ----------Test Code----------
+			UE_LOG(LogTemp, Error, TEXT("-----Done rotating-----"));
+		}
+	}	
 }
