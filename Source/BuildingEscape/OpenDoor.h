@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Containers/Array.h"
 #include "Engine/TriggerVolume.h"
-
 #include "OpenDoor.generated.h"
 
 
@@ -31,17 +31,25 @@ public:
 	void CheckForPressurePlate() const;
 	void FindAudioComponent();
 	float TotalMassOfActors() const;
+	bool CheckForOveralppingActorThatOpens() const;
+	void CheckActorsRotations();
 
 	// Member Variables
 	bool bCanPlayOpenDoorSound = true;
 	bool bCanPlayCloseDoorSound = false;
+	bool bRotatableActorsHaveCorrectRotation = false;
 	float DoorLastOpened = 0.f;
 	float InitialYaw;
 	float CurrentYaw;
 	FRotator DoorRotation;
 
+	int32 NumCorrectRotations = 0;
+
 	UPROPERTY(EditAnyWhere)
 	AActor* ActorThatOpens = nullptr;
+
+	UPROPERTY(EditAnyWhere)
+	bool bUsePressurePlate = true;
 	
 	UPROPERTY(EditAnyWhere)
 	float OpenAngle = 90.f;
@@ -63,4 +71,10 @@ public:
 
 	UPROPERTY(EditAnyWhere)
 	UAudioComponent* AudioComponent = nullptr;
+
+	UPROPERTY(EditAnyWhere)
+	TArray<float> RotatableActorsRotations;
+
+	UPROPERTY(EditAnyWhere)
+	TArray<AActor*> RotatableActors;
 };

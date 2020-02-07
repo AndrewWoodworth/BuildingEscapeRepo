@@ -25,7 +25,7 @@ void UWorldPosition::BeginPlay()
 
 	UE_LOG(LogTemp, Warning, TEXT("%s's position is: %s"), *ObjectName, *ObjectPosition);
 	
-}
+}	
 
 
 // Called every frame

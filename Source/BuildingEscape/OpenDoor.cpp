@@ -32,8 +32,14 @@ void UOpenDoor::BeginPlay()
 	OpenAngle += InitialYaw;
 	CurrentYaw = InitialYaw;
 
-	CheckForPressurePlate();
+	if (bUsePressurePlate) {CheckForPressurePlate();}
 	FindAudioComponent();
+
+	// ----------------TEST CODE-------------------------
+	if (!bUsePressurePlate)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("The number of RotatableActors is: %i"), RotatableActors.Num());
+	}
 }
 
 void UOpenDoor::FindAudioComponent()
@@ -59,11 +65,16 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (TotalMassOfActors() >= MassToOpenDoor || PressurePlate->IsOverlappingActor(ActorThatOpens))
+	if (!bUsePressurePlate)
+	{
+		CheckActorsRotations();
+	}
+
+	if (TotalMassOfActors() >= MassToOpenDoor || bRotatableActorsHaveCorrectRotation || CheckForOveralppingActorThatOpens())
 	{
 		OpenDoor(DeltaTime);
 		DoorLastOpened = GetWorld()->GetTimeSeconds();
-	} 
+	}
 	else if (CurrentYaw != InitialYaw)
 	{
 		if (GetWorld()->GetTimeSeconds() - DoorLastOpened >= DoorCloseDelay)
@@ -127,6 +138,53 @@ float UOpenDoor::TotalMassOfActors() const
 			TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
 		}
 	}
-	
+
 	return TotalMass;
+}
+
+bool UOpenDoor::CheckForOveralppingActorThatOpens() const
+{
+	if (!PressurePlate)
+	{
+		return false;
+	}
+	
+	return PressurePlate->IsOverlappingActor(ActorThatOpens);
+}
+
+void UOpenDoor::CheckActorsRotations()
+{
+	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0))
+	{
+		// ----------------TEST CODE-------------------------
+		if (!bUsePressurePlate)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No rotatable actors!"));
+		}
+
+		return;
+	}
+
+	for (int32 i = 0; i < RotatableActors.Num(); i++)
+	{
+		FRotator ActorRotation = RotatableActors[i]->GetActorRotation();
+		UE_LOG(LogTemp, Warning, TEXT("RotatableActorsRotation of index: %i = %f; and the ActorRotation.Yaw = %f"), i, RotatableActorsRotations[i], ActorRotation.Yaw);
+
+		if (RotatableActorsRotations[i] == ceilf(FMath::Abs(ActorRotation.Yaw)))
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("The Number of Correct Rotations is: %i"), NumCorrectRotations);
+			NumCorrectRotations += 1;
+			if (NumCorrectRotations >= RotatableActors.Num())
+			{
+				bRotatableActorsHaveCorrectRotation = true;
+				//UE_LOG(LogTemp, Error, TEXT("bRotatableActorsHaveCorrectRotation = true"));
+			}
+		}
+		else
+		{
+			bRotatableActorsHaveCorrectRotation = false;
+			//UE_LOG(LogTemp, Error, TEXT("bRotatableActorsHaveCorrectRotation = false"));
+		}
+		
+	}
 }
