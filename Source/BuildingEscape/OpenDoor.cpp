@@ -3,6 +3,7 @@
 
 #include "OpenDoor.h"
 #include "Components/AudioComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Containers/UnrealString.h"
 #include "Engine/World.h"
@@ -165,19 +166,22 @@ void UOpenDoor::CheckActorsRotations()
 		return;
 	}
 
+	int32 NumCorrectRotations = 0;
+
 	for (int32 i = 0; i < RotatableActors.Num(); i++)
 	{
 		FRotator ActorRotation = RotatableActors[i]->GetActorRotation();
-		UE_LOG(LogTemp, Warning, TEXT("RotatableActorsRotation of index: %i = %f; and the ActorRotation.Yaw = %f"), i, RotatableActorsRotations[i], ActorRotation.Yaw);
+		//UE_LOG(LogTemp, Warning, TEXT("RotatableActorsRotation of index: %i = %f; and the ActorRotation.Yaw = %f"), i, RotatableActorsRotations[i], ActorRotation.Yaw);
 
-		if (RotatableActorsRotations[i] == ceilf(FMath::Abs(ActorRotation.Yaw)))
+		if (RotatableActorsRotations[i] == FMath::RoundToFloat(FMath::Abs(ActorRotation.Yaw)))
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("The Number of Correct Rotations is: %i"), NumCorrectRotations);
 			NumCorrectRotations += 1;
 			if (NumCorrectRotations >= RotatableActors.Num())
 			{
 				bRotatableActorsHaveCorrectRotation = true;
-				//UE_LOG(LogTemp, Error, TEXT("bRotatableActorsHaveCorrectRotation = true"));
+				/* AActor** ObjectToRotate = Cast<AActor*>(ObjectToRotate);
+				UE_LOG(LogTemp, Warning, TEXT("%s is the ObjectToRotate"), **ObjectToRotate->GetName()); */
 			}
 		}
 		else
@@ -185,6 +189,5 @@ void UOpenDoor::CheckActorsRotations()
 			bRotatableActorsHaveCorrectRotation = false;
 			//UE_LOG(LogTemp, Error, TEXT("bRotatableActorsHaveCorrectRotation = false"));
 		}
-		
 	}
 }

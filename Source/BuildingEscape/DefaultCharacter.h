@@ -12,6 +12,8 @@ class BUILDINGESCAPE_API ADefaultCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
+	AActor* ObjectToRotate = nullptr;
+
 	// Sets default values for this character's properties
 	ADefaultCharacter();
 
@@ -37,14 +39,13 @@ protected:
 	void RotateObjects(float DeltaTime);
 
 private:
-	FRotator ActorRotation;
-	float TargetRotation;
-	float OriginalActorYaw;
 	bool bIsRotating = false;
 	bool bCanBeGrabbing = false;
-	AActor* ObjectToRotate = nullptr;
-	FVector PlayerViewPointLocation;
+	float TargetRotation;
+	float OriginalActorYaw;
+	FRotator ActorRotation;
 	FRotator PlayerViewPointRotation;
+	FVector PlayerViewPointLocation;
 	FVector LineTraceEnd;
 
 	float TurnSpeed = 45.f;

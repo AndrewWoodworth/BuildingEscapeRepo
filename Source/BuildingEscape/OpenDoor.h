@@ -43,8 +43,6 @@ public:
 	float CurrentYaw;
 	FRotator DoorRotation;
 
-	int32 NumCorrectRotations = 0;
-
 	UPROPERTY(EditAnyWhere)
 	AActor* ActorThatOpens = nullptr;
 

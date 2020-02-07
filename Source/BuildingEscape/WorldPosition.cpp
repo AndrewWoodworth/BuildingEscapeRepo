@@ -24,7 +24,6 @@ void UWorldPosition::BeginPlay()
 	FString ObjectPosition = GetOwner()->GetActorLocation().ToString();
 
 	UE_LOG(LogTemp, Warning, TEXT("%s's position is: %s"), *ObjectName, *ObjectPosition);
-	
 }	
 
 
