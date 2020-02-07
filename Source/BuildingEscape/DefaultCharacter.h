@@ -40,7 +40,6 @@ private:
 	FRotator ActorRotation;
 	float TargetRotation;
 	float OriginalActorYaw;
-	float YawToBeLerped;
 	bool bIsRotating = false;
 	bool bCanBeGrabbing = false;
 	AActor* ObjectToRotate = nullptr;
@@ -52,7 +51,7 @@ private:
 	float LookUpSpeed = 45.f;
 
 	UPROPERTY(EditAnyWhere)
-	float AmountOfRotation = 90.f;
+	float AmountToRotateObject = 90.f;
 
 	UPROPERTY(EditAnyWhere)
 	float PlayerMass = 60.f;

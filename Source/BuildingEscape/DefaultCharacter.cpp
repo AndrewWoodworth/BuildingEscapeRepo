@@ -34,7 +34,7 @@ void ADefaultCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// If the PhysicsHandle is attached move and rotate the PhysicsHandle's target location and target rotation.
+	// If the PhysicsHandle is attached move and rotate the PhysicsHandle's target location and target rotation (basically move grabbed object).
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocationAndRotation(GetLineTraceEnd(), GrabTransform->GetComponentRotation());
@@ -52,8 +52,6 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ADefaultCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ADefaultCharacter::MoveRight);
-	PlayerInputComponent->BindAxis(TEXT("MoveBackward"), this, &ADefaultCharacter::MoveBackward);
-	PlayerInputComponent->BindAxis(TEXT("MoveLeft"), this, &ADefaultCharacter::MoveLeft);
 
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ACharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ACharacter::AddControllerYawInput);
@@ -145,8 +143,6 @@ FVector ADefaultCharacter::GetLineTraceEnd()
 
 void ADefaultCharacter::CheckForObjectsToRotate()
 {
-	UE_LOG(LogTemp, Warning, TEXT("RotateObject is activated."));
-
 	FCollisionQueryParams TraceParams(NAME_None, false, this);
 	FHitResult HitResult;
 
@@ -161,18 +157,11 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 	AActor* ActorHit = HitResult.GetActor();
 	UPrimitiveComponent* ComponentHit = HitResult.GetComponent();
 
-
-	// ----------Test Code---------
-	if (!ActorHit || !ComponentHit) {return;}
-	UE_LOG(LogTemp, Warning, TEXT("%s actor was hit by a ray."), *ActorHit->GetName());
-	UE_LOG(LogTemp, Warning, TEXT("%s component was hit by a ray."), *ComponentHit->GetName());
-
 	if (!bIsRotating && ActorHit)
 	{
 		ObjectToRotate = ActorHit;
 		ActorRotation = ObjectToRotate->GetActorRotation();
-		TargetRotation = ActorRotation.Yaw + AmountOfRotation;
-		YawToBeLerped = ActorRotation.Yaw;
+		TargetRotation = ActorRotation.Yaw + AmountToRotateObject;
 		OriginalActorYaw = ActorRotation.Yaw;
 		bIsRotating = true;
 	}
@@ -182,21 +171,15 @@ void ADefaultCharacter::RotateObjects(float DeltaTime)
 {
 	if (ObjectToRotate && bIsRotating)
 	{
-		ActorRotation.Yaw = FMath::Lerp(ActorRotation.Yaw, TargetRotation, 1.1f * DeltaTime);
-		// ----------Test Code----------
-		UE_LOG(LogTemp, Warning, TEXT("Object Yaw is: %s"), *FString::Printf(TEXT("%.2f"), ActorRotation.Yaw));
+		ActorRotation.Yaw = FMath::Lerp(ActorRotation.Yaw, TargetRotation, 1.6f * DeltaTime);
 
 		ObjectToRotate->SetActorRotation(ActorRotation);
 
-		if ((OriginalActorYaw + AmountOfRotation) - ActorRotation.Yaw < .5f)
+		if ((OriginalActorYaw + AmountToRotateObject) - ActorRotation.Yaw < .5f)
 		{
-			ActorRotation.Yaw = OriginalActorYaw + AmountOfRotation;
+			ActorRotation.Yaw = OriginalActorYaw + AmountToRotateObject;
 			ObjectToRotate->SetActorRotation(ActorRotation);
-			UE_LOG(LogTemp, Warning, TEXT("Final object Yaw is: %s"), *FString::Printf(TEXT("%.2f"), ActorRotation.Yaw));
 			bIsRotating = false;
-
-			// ----------Test Code----------
-			UE_LOG(LogTemp, Error, TEXT("-----Done rotating-----"));
 		}
 	}	
 }
