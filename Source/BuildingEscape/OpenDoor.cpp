@@ -9,8 +9,6 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
 
-#include "DefaultCharacter.generated.h"
-
 #define OUT
 
 // Sets default values for this component's properties
@@ -181,9 +179,6 @@ void UOpenDoor::CheckActorsRotations()
 			if (NumCorrectRotations >= RotatableActors.Num())
 			{
 				bRotatableActorsHaveCorrectRotation = true;
-				// ADefaultCharacter ObjectToRotate = Cast<ADefaultCharacter>(ADefaultCharacter);
-				// AActor* NewObjectToRotate = *ObjectToRotate;
-				// UE_LOG(LogTemp, Warning, TEXT("%s is the ObjectToRotate"), *NewObjectToRotate->GetName());
 			}
 		}
 		else
