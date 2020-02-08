@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Containers/Array.h"
+#include "DefaultCharacter.h"
 #include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
@@ -32,8 +33,10 @@ public:
 	float TotalMassOfActors() const;
 	bool CheckForOveralppingActorThatOpens() const;
 	void CheckActorsRotations();
+	void ChangeMaterial();
 
 	// Member Variables
+	class ADefaultCharacter* DefaultCharacterPtr;
 	bool bCanPlayOpenDoorSound = true;
 	bool bCanPlayCloseDoorSound = false;
 	bool bRotatableActorsHaveCorrectRotation = false;
@@ -74,4 +77,9 @@ public:
 
 	UPROPERTY(EditAnyWhere)
 	TArray<AActor*> RotatableActors;
+
+	UPROPERTY(EditAnyWhere)
+	FName MeshToChangeMatOf = TEXT("StaticMeshComponent1");
+
+	TArray<UObject*> DefaultSubobjects;
 };

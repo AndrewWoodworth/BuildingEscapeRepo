@@ -25,6 +25,8 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	DefaultCharacterPtr = Cast<ADefaultCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+
 	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 
 	DoorRotation = GetOwner()->GetActorRotation();
@@ -176,6 +178,7 @@ void UOpenDoor::CheckActorsRotations()
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("The Number of Correct Rotations is: %i"), NumCorrectRotations);
 			NumCorrectRotations += 1;
+			ChangeMaterial();
 			if (NumCorrectRotations >= RotatableActors.Num())
 			{
 				bRotatableActorsHaveCorrectRotation = true;
@@ -186,5 +189,23 @@ void UOpenDoor::CheckActorsRotations()
 			bRotatableActorsHaveCorrectRotation = false;
 			//UE_LOG(LogTemp, Error, TEXT("bRotatableActorsHaveCorrectRotation = false"));
 		}
+	}
+}
+
+void UOpenDoor::ChangeMaterial()
+{
+	if (DefaultCharacterPtr && DefaultCharacterPtr->ObjectToRotate)
+	{
+		DefaultCharacterPtr->ObjectToRotate->GetRootComponent()->GetDefaultSubobjects(OUT DefaultSubobjects);
+		for (UObject* Object : DefaultSubobjects)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s is a SubObject"), *Object->GetName());
+		}
+		//UE_LOG(LogTemp, Warning, TEXT("%s is the Object to Rotate"), *DefaultCharacterPtr->ObjectToRotate->GetName());
+		// UE_LOG(LogTemp, Warning, TEXT("%s is the Object's root Component"), *DefaultCharacterPtr->ObjectToRotate->GetRootComponent()->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("%s is the UStaticMeshComponent1 Component"), *DefaultCharacterPtr->ObjectToRotate->GetRootComponent()->GetDefaultSubobjectByName(MeshToChangeMatOf)->GetName());
+
+		// Maybe make "StaticMeshComponent1" a UPROPERTY?
+		//DefaultCharacterPtr->ObjectToRotate->GetRootComponent()->GetDefaultSubobjectByName(TEXT("StaticMeshComponent1"));
 	}
 }
