@@ -12,8 +12,6 @@ class BUILDINGESCAPE_API ADefaultCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	AActor* ObjectToRotate = nullptr;
-
 	// Sets default values for this character's properties
 	ADefaultCharacter();
 
@@ -22,6 +20,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Public variables
+	AActor* ObjectToRotate = nullptr;
 
 protected:
 	// Called when the game starts or when spawned

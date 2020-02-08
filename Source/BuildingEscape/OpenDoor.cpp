@@ -3,12 +3,13 @@
 
 #include "OpenDoor.h"
 #include "Components/AudioComponent.h"
-#include "Components/BoxComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Containers/UnrealString.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
+
+#include "DefaultCharacter.generated.h"
 
 #define OUT
 
@@ -180,8 +181,9 @@ void UOpenDoor::CheckActorsRotations()
 			if (NumCorrectRotations >= RotatableActors.Num())
 			{
 				bRotatableActorsHaveCorrectRotation = true;
-				/* AActor** ObjectToRotate = Cast<AActor*>(ObjectToRotate);
-				UE_LOG(LogTemp, Warning, TEXT("%s is the ObjectToRotate"), **ObjectToRotate->GetName()); */
+				// ADefaultCharacter ObjectToRotate = Cast<ADefaultCharacter>(ADefaultCharacter);
+				// AActor* NewObjectToRotate = *ObjectToRotate;
+				// UE_LOG(LogTemp, Warning, TEXT("%s is the ObjectToRotate"), *NewObjectToRotate->GetName());
 			}
 		}
 		else
