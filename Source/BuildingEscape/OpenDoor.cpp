@@ -4,6 +4,7 @@
 #include "OpenDoor.h"
 #include "Components/AudioComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Containers/UnrealString.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
@@ -36,12 +37,6 @@ void UOpenDoor::BeginPlay()
 
 	if (bUsePressurePlate) {CheckForPressurePlate();}
 	FindAudioComponent();
-
-	// ----------------TEST CODE-------------------------
-	if (!bUsePressurePlate)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("The number of RotatableActors is: %i"), RotatableActors.Num());
-	}
 }
 
 void UOpenDoor::FindAudioComponent()
@@ -67,6 +62,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// TODO: Should a pressure plate and rotatable actors be allowed to open the door at the same time?
 	if (!bUsePressurePlate)
 	{
 		CheckActorsRotations();
@@ -88,9 +84,6 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
-	// Print rotation to log.
-	// UE_LOG(LogTemp, Warning, TEXT("Object Yaw is: %s"), *FString::Printf(TEXT("%.2f"), CurrentYaw));
-
 	DoorRotation.Yaw = FMath::Lerp(CurrentYaw, OpenAngle, DoorOpenSpeed * DeltaTime);
 	CurrentYaw = DoorRotation.Yaw;
 
@@ -140,43 +133,24 @@ float UOpenDoor::TotalMassOfActors() const
 			TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
 		}
 	}
-
 	return TotalMass;
 }
 
 bool UOpenDoor::CheckForOveralppingActorThatOpens() const
 {
-	if (!PressurePlate)
-	{
-		return false;
-	}
-	
+	if (!PressurePlate) {return false;}
 	return PressurePlate->IsOverlappingActor(ActorThatOpens);
 }
 
 void UOpenDoor::CheckActorsRotations()
 {
-	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0))
-	{
-		// ----------------TEST CODE-------------------------
-		if (!bUsePressurePlate)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("No rotatable actors!"));
-		}
-
-		return;
-	}
+	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0)) {return;}
 
 	int32 NumCorrectRotations = 0;
-
 	for (int32 i = 0; i < RotatableActors.Num(); i++)
 	{
-		FRotator ActorRotation = RotatableActors[i]->GetActorRotation();
-		//UE_LOG(LogTemp, Warning, TEXT("RotatableActorsRotation of index: %i = %f; and the ActorRotation.Yaw = %f"), i, RotatableActorsRotations[i], ActorRotation.Yaw);
-
-		if (RotatableActorsRotations[i] == FMath::RoundToFloat(FMath::Abs(ActorRotation.Yaw)))
+		if (RotatableActorsRotations[i] == FMath::RoundToFloat(FMath::Abs(RotatableActors[i]->GetActorRotation().Yaw)))
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("The Number of Correct Rotations is: %i"), NumCorrectRotations);
 			NumCorrectRotations += 1;
 			ChangeMaterial();
 			if (NumCorrectRotations >= RotatableActors.Num())
@@ -187,7 +161,6 @@ void UOpenDoor::CheckActorsRotations()
 		else
 		{
 			bRotatableActorsHaveCorrectRotation = false;
-			//UE_LOG(LogTemp, Error, TEXT("bRotatableActorsHaveCorrectRotation = false"));
 		}
 	}
 }
@@ -196,16 +169,11 @@ void UOpenDoor::ChangeMaterial()
 {
 	if (DefaultCharacterPtr && DefaultCharacterPtr->ObjectToRotate)
 	{
-		DefaultCharacterPtr->ObjectToRotate->GetRootComponent()->GetDefaultSubobjects(OUT DefaultSubobjects);
-		for (UObject* Object : DefaultSubobjects)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s is a SubObject"), *Object->GetName());
-		}
-		//UE_LOG(LogTemp, Warning, TEXT("%s is the Object to Rotate"), *DefaultCharacterPtr->ObjectToRotate->GetName());
-		// UE_LOG(LogTemp, Warning, TEXT("%s is the Object's root Component"), *DefaultCharacterPtr->ObjectToRotate->GetRootComponent()->GetName());
-		//UE_LOG(LogTemp, Warning, TEXT("%s is the UStaticMeshComponent1 Component"), *DefaultCharacterPtr->ObjectToRotate->GetRootComponent()->GetDefaultSubobjectByName(MeshToChangeMatOf)->GetName());
-
-		// Maybe make "StaticMeshComponent1" a UPROPERTY?
-		//DefaultCharacterPtr->ObjectToRotate->GetRootComponent()->GetDefaultSubobjectByName(TEXT("StaticMeshComponent1"));
+		UObject* ChangeMatObject = DefaultCharacterPtr->ObjectToRotate->GetDefaultSubobjectByName(NameOfMeshToChangeMatFor);
+		//UE_LOG(LogTemp, Warning, TEXT("%s is StaticMeshComponent1"), *ChangeMatObject->GetName());
+		// if (ChangeMatObject->IsA<UStaticMeshComponent*>())
+		// {
+		// 	UE_LOG(LogTemp, Warning, TEXT("ChangeMatObject is a UStaticMeshComponent*"));
+		// }
 	}
 }

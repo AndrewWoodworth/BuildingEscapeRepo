@@ -26,24 +26,25 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	bool CheckForOveralppingActorThatOpens() const;
+	float TotalMassOfActors() const;
 	void OpenDoor(float DeltaTime);
 	void CloseDoor(float DeltaTime);
 	void CheckForPressurePlate() const;
 	void FindAudioComponent();
-	float TotalMassOfActors() const;
-	bool CheckForOveralppingActorThatOpens() const;
 	void CheckActorsRotations();
 	void ChangeMaterial();
 
 	// Member Variables
-	class ADefaultCharacter* DefaultCharacterPtr;
 	bool bCanPlayOpenDoorSound = true;
 	bool bCanPlayCloseDoorSound = false;
 	bool bRotatableActorsHaveCorrectRotation = false;
+	class ADefaultCharacter* DefaultCharacterPtr;
 	float DoorLastOpened = 0.f;
 	float InitialYaw;
 	float CurrentYaw;
 	FRotator DoorRotation;
+	TArray<UObject*> DefaultSubobjects;
 
 	UPROPERTY(EditAnyWhere)
 	AActor* ActorThatOpens = nullptr;
@@ -79,7 +80,5 @@ public:
 	TArray<AActor*> RotatableActors;
 
 	UPROPERTY(EditAnyWhere)
-	FName MeshToChangeMatOf = TEXT("StaticMeshComponent1");
-
-	TArray<UObject*> DefaultSubobjects;
+	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent1");
 };
