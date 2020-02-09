@@ -81,4 +81,7 @@ public:
 
 	UPROPERTY(EditAnyWhere)
 	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent1");
+
+	UPROPERTY(EditAnyWhere)
+	class UMaterial* NewMaterial = nullptr;
 };

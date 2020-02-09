@@ -9,6 +9,7 @@
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
+#include "Materials/Material.h"
 
 #define OUT
 
@@ -169,11 +170,13 @@ void UOpenDoor::ChangeMaterial()
 {
 	if (DefaultCharacterPtr && DefaultCharacterPtr->ObjectToRotate)
 	{
-		UObject* ChangeMatObject = DefaultCharacterPtr->ObjectToRotate->GetDefaultSubobjectByName(NameOfMeshToChangeMatFor);
-		//UE_LOG(LogTemp, Warning, TEXT("%s is StaticMeshComponent1"), *ChangeMatObject->GetName());
-		// if (ChangeMatObject->IsA<UStaticMeshComponent*>())
-		// {
-		// 	UE_LOG(LogTemp, Warning, TEXT("ChangeMatObject is a UStaticMeshComponent*"));
-		// }
+		//UObject* ChangeMatObject = DefaultCharacterPtr->ObjectToRotate->GetDefaultSubobjectByName(NameOfMeshToChangeMatFor);
+		UStaticMeshComponent* ChangeMatMesh = DefaultCharacterPtr->ObjectToRotate->FindComponentByClass<UStaticMeshComponent>();
+		//UE_LOG(LogTemp, Warning, TEXT("%s is StaticMeshComponent1"), *ChangeMatMesh->GetName());
+		
+		//static ConstructorHelpers::FObjectFinder<UMaterial> ChangeMatMesh(TEXT("MedievalDungeon/Materials/M_Statue_Hooded_Metal_Inst"));
+		if (!NewMaterial) {return;}
+
+		//ChangeMatMesh->SetMaterial(0, NewMaterial);
 	}
 }
