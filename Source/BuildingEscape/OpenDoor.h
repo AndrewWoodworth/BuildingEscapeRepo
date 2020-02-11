@@ -33,13 +33,12 @@ public:
 	void CheckForPressurePlate() const;
 	void FindAudioComponent();
 	void CheckActorsRotations();
-	void ChangeMaterial();
+	void ChangeMaterial(int32 MaterialIndex, class UMaterial* NewMaterial, UStaticMeshComponent* MeshToChangeMatOf);
 
 	// Member Variables
 	bool bCanPlayOpenDoorSound = true;
 	bool bCanPlayCloseDoorSound = false;
 	bool bRotatableActorsHaveCorrectRotation = false;
-	class ADefaultCharacter* DefaultCharacterPtr;
 	float DoorLastOpened = 0.f;
 	float InitialYaw;
 	float CurrentYaw;
@@ -51,6 +50,9 @@ public:
 
 	UPROPERTY(EditAnyWhere)
 	bool bUsePressurePlate = true;
+
+	UPROPERTY()
+	class ADefaultCharacter* DefaultCharacterPtr;
 	
 	UPROPERTY(EditAnyWhere)
 	float OpenAngle = 90.f;
@@ -80,8 +82,11 @@ public:
 	TArray<AActor*> RotatableActors;
 
 	UPROPERTY(EditAnyWhere)
-	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent1");
+	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent0");
 
 	UPROPERTY(EditAnyWhere)
-	class UMaterial* NewMaterial = nullptr;
+	class UMaterial* StatueInCorrectRotationMat = nullptr;
+
+	UPROPERTY(EditAnyWhere)
+	class UMaterial* StatueNotInCorrectRotationMat = nullptr;
 };

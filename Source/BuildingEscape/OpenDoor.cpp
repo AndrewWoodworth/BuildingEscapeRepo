@@ -148,12 +148,16 @@ void UOpenDoor::CheckActorsRotations()
 	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0)) {return;}
 
 	int32 NumCorrectRotations = 0;
+	if (!DefaultCharacterPtr || !DefaultCharacterPtr->ObjectToRotate) {return;}
+	UStaticMeshComponent* ChangeMatMesh = DefaultCharacterPtr->ObjectToRotate->FindComponentByClass<UStaticMeshComponent>();
+
 	for (int32 i = 0; i < RotatableActors.Num(); i++)
 	{
 		if (RotatableActorsRotations[i] == FMath::RoundToFloat(FMath::Abs(RotatableActors[i]->GetActorRotation().Yaw)))
 		{
 			NumCorrectRotations += 1;
-			ChangeMaterial();
+			ChangeMaterial(0, StatueInCorrectRotationMat, ChangeMatMesh);
+			
 			if (NumCorrectRotations >= RotatableActors.Num())
 			{
 				bRotatableActorsHaveCorrectRotation = true;
@@ -162,21 +166,15 @@ void UOpenDoor::CheckActorsRotations()
 		else
 		{
 			bRotatableActorsHaveCorrectRotation = false;
+			ChangeMaterial(0, StatueNotInCorrectRotationMat, ChangeMatMesh);
 		}
 	}
 }
 
-void UOpenDoor::ChangeMaterial()
+void UOpenDoor::ChangeMaterial(int32 MaterialIndex, class UMaterial* NewMaterial, UStaticMeshComponent* MeshToChangeMatOf)
 {
-	if (DefaultCharacterPtr && DefaultCharacterPtr->ObjectToRotate)
+	if (NewMaterial && MeshToChangeMatOf && MeshToChangeMatOf->GetMaterial(MaterialIndex) != NewMaterial)
 	{
-		//UObject* ChangeMatObject = DefaultCharacterPtr->ObjectToRotate->GetDefaultSubobjectByName(NameOfMeshToChangeMatFor);
-		UStaticMeshComponent* ChangeMatMesh = DefaultCharacterPtr->ObjectToRotate->FindComponentByClass<UStaticMeshComponent>();
-		//UE_LOG(LogTemp, Warning, TEXT("%s is StaticMeshComponent1"), *ChangeMatMesh->GetName());
-		
-		//static ConstructorHelpers::FObjectFinder<UMaterial> ChangeMatMesh(TEXT("MedievalDungeon/Materials/M_Statue_Hooded_Metal_Inst"));
-		if (!NewMaterial) {return;}
-
-		//ChangeMatMesh->SetMaterial(0, NewMaterial);
+		MeshToChangeMatOf->SetMaterial(MaterialIndex, NewMaterial);
 	}
 }

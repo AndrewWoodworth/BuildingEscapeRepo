@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "OpenDoor.h"
 #include "DefaultCharacter.generated.h"
 
 UCLASS()
@@ -51,6 +52,9 @@ private:
 
 	float TurnSpeed = 45.f;
 	float LookUpSpeed = 45.f;
+
+	UPROPERTY()
+	UOpenDoor* OpenDoorPtr;
 
 	UPROPERTY(EditAnyWhere)
 	float AmountToRotateObject = 90.f;
