@@ -32,21 +32,24 @@ public:
 	void CloseDoor(float DeltaTime);
 	void CheckForPressurePlate() const;
 	void FindAudioComponent();
-	void CheckActorsRotations();
-	void ChangeMaterial(int32 MaterialIndex, class UMaterial* NewMaterial, UStaticMeshComponent* MeshToChangeMatOf);
+	void CheckActorsRotations(float DeltaTime);
+	void ChangeMaterial(int32 MaterialIndex, class UMaterial* NewMaterial, class UMaterial* OldMaterial, UStaticMeshComponent* MeshToChangeMatOf, float DeltaTime);
 
 	// Member Variables
-	bool bCanPlayOpenDoorSound = true;
 	bool bCanPlayCloseDoorSound = false;
+	bool bCanPlayOpenDoorSound = true;
 	bool bRotatableActorsHaveCorrectRotation = false;
+	float CurrentYaw;
 	float DoorLastOpened = 0.f;
 	float InitialYaw;
-	float CurrentYaw;
 	FRotator DoorRotation;
 	TArray<UObject*> DefaultSubobjects;
 
 	UPROPERTY(EditAnyWhere)
 	AActor* ActorThatOpens = nullptr;
+
+	UPROPERTY(EditAnyWhere)
+	ATriggerVolume* PressurePlate = nullptr;
 
 	UPROPERTY(EditAnyWhere)
 	bool bUsePressurePlate = true;
@@ -55,25 +58,28 @@ public:
 	class ADefaultCharacter* DefaultCharacterPtr;
 	
 	UPROPERTY(EditAnyWhere)
-	float OpenAngle = 90.f;
+	class UMaterial* StatueInCorrectRotationMat = nullptr;
+
+	UPROPERTY(EditAnyWhere)
+	class UMaterial* StatueNotInCorrectRotationMat = nullptr;
+
+	UPROPERTY(EditAnyWhere)
+	float DoorCloseDelay = 0.3f;
+	
+	UPROPERTY(EditAnyWhere)
+	float DoorCloseSpeed = 1.5f;
 
 	UPROPERTY(EditAnyWhere)
 	float DoorOpenSpeed = 0.5f;
 
 	UPROPERTY(EditAnyWhere)
-	float DoorCloseSpeed = 1.5f;
-
-	UPROPERTY(EditAnyWhere)
-	float DoorCloseDelay = 0.3f;
-
-	UPROPERTY(EditAnyWhere)
 	float MassToOpenDoor = 50.f;
 
 	UPROPERTY(EditAnyWhere)
-	ATriggerVolume* PressurePlate = nullptr;
+	float OpenAngle = 90.f;
 
 	UPROPERTY(EditAnyWhere)
-	UAudioComponent* AudioComponent = nullptr;
+	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent0");
 
 	UPROPERTY(EditAnyWhere)
 	TArray<float> RotatableActorsRotations;
@@ -82,11 +88,5 @@ public:
 	TArray<AActor*> RotatableActors;
 
 	UPROPERTY(EditAnyWhere)
-	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent0");
-
-	UPROPERTY(EditAnyWhere)
-	class UMaterial* StatueInCorrectRotationMat = nullptr;
-
-	UPROPERTY(EditAnyWhere)
-	class UMaterial* StatueNotInCorrectRotationMat = nullptr;
+	UAudioComponent* AudioComponent = nullptr;
 };

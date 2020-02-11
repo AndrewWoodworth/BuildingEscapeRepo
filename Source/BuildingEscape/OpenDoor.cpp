@@ -66,7 +66,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	// TODO: Should a pressure plate and rotatable actors be allowed to open the door at the same time?
 	if (!bUsePressurePlate)
 	{
-		CheckActorsRotations();
+		CheckActorsRotations(DeltaTime);
 	}
 
 	if (TotalMassOfActors() >= MassToOpenDoor || bRotatableActorsHaveCorrectRotation || CheckForOveralppingActorThatOpens())
@@ -143,7 +143,7 @@ bool UOpenDoor::CheckForOveralppingActorThatOpens() const
 	return PressurePlate->IsOverlappingActor(ActorThatOpens);
 }
 
-void UOpenDoor::CheckActorsRotations()
+void UOpenDoor::CheckActorsRotations(float DeltaTime)
 {
 	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0)) {return;}
 
@@ -156,7 +156,7 @@ void UOpenDoor::CheckActorsRotations()
 		if (RotatableActorsRotations[i] == FMath::RoundToFloat(FMath::Abs(RotatableActors[i]->GetActorRotation().Yaw)))
 		{
 			NumCorrectRotations += 1;
-			ChangeMaterial(0, StatueInCorrectRotationMat, ChangeMatMesh);
+			ChangeMaterial(0, StatueInCorrectRotationMat, StatueNotInCorrectRotationMat, ChangeMatMesh, DeltaTime);
 			
 			if (NumCorrectRotations >= RotatableActors.Num())
 			{
@@ -166,15 +166,20 @@ void UOpenDoor::CheckActorsRotations()
 		else
 		{
 			bRotatableActorsHaveCorrectRotation = false;
-			ChangeMaterial(0, StatueNotInCorrectRotationMat, ChangeMatMesh);
+			ChangeMaterial(0, StatueNotInCorrectRotationMat, StatueInCorrectRotationMat, ChangeMatMesh, DeltaTime);
 		}
 	}
 }
 
-void UOpenDoor::ChangeMaterial(int32 MaterialIndex, class UMaterial* NewMaterial, UStaticMeshComponent* MeshToChangeMatOf)
+void UOpenDoor::ChangeMaterial(int32 MaterialIndex, class UMaterial* NewMaterial, class UMaterial* OldMaterial, UStaticMeshComponent* MeshToChangeMatOf, float DeltaTime)
 {
 	if (NewMaterial && MeshToChangeMatOf && MeshToChangeMatOf->GetMaterial(MaterialIndex) != NewMaterial)
 	{
-		MeshToChangeMatOf->SetMaterial(MaterialIndex, NewMaterial);
+		// class UMaterial* CurrentMaterial;
+
+		// CurrentMaterial = FMath::Lerp(NewMaterial, OldMaterial, .5f * DeltaTime);
+		// NewMaterial = CurrentMaterial;
+
+		// MeshToChangeMatOf->SetMaterial(MaterialIndex, CurrentMaterial);
 	}
 }
