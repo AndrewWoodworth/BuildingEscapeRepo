@@ -18,6 +18,9 @@ public:
 	// Sets default values for this component's properties
 	UOpenDoor();
 
+	// Public Functions
+	void CheckActorsRotations(float DeltaTime);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -32,8 +35,7 @@ public:
 	void CloseDoor(float DeltaTime);
 	void CheckForPressurePlate() const;
 	void FindAudioComponent();
-	void CheckActorsRotations(float DeltaTime);
-	void ChangeMaterial(int32 MaterialIndex, class UMaterial* NewMaterial, class UMaterial* OldMaterial, UStaticMeshComponent* MeshToChangeMatOf, float DeltaTime);
+	void ChangeMaterial(float MaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, UStaticMeshComponent* MeshToChangeMatOf, float DeltaTime);
 
 	// Member Variables
 	bool bCanPlayCloseDoorSound = false;
@@ -42,26 +44,18 @@ public:
 	float CurrentYaw;
 	float DoorLastOpened = 0.f;
 	float InitialYaw;
+	float CurrentMetalness;
 	FRotator DoorRotation;
 	TArray<UObject*> DefaultSubobjects;
+
+	UPROPERTY(EditAnyWhere)
+	bool bUsePressurePlate = true;
 
 	UPROPERTY(EditAnyWhere)
 	AActor* ActorThatOpens = nullptr;
 
 	UPROPERTY(EditAnyWhere)
 	ATriggerVolume* PressurePlate = nullptr;
-
-	UPROPERTY(EditAnyWhere)
-	bool bUsePressurePlate = true;
-
-	UPROPERTY()
-	class ADefaultCharacter* DefaultCharacterPtr;
-	
-	UPROPERTY(EditAnyWhere)
-	class UMaterial* StatueInCorrectRotationMat = nullptr;
-
-	UPROPERTY(EditAnyWhere)
-	class UMaterial* StatueNotInCorrectRotationMat = nullptr;
 
 	UPROPERTY(EditAnyWhere)
 	float DoorCloseDelay = 0.3f;
@@ -79,13 +73,31 @@ public:
 	float OpenAngle = 90.f;
 
 	UPROPERTY(EditAnyWhere)
-	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent0");
-
-	UPROPERTY(EditAnyWhere)
 	TArray<float> RotatableActorsRotations;
 
 	UPROPERTY(EditAnyWhere)
 	TArray<AActor*> RotatableActors;
+
+	UPROPERTY()
+	class ADefaultCharacter* DefaultCharacterPtr;
+
+	UPROPERTY(EditAnyWhere)
+	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent0");
+	
+	UPROPERTY(EditAnyWhere)
+	class UMaterial* ActorCorrectRotationMat = nullptr;
+
+	UPROPERTY(EditAnyWhere)
+	class UMaterialInstanceDynamic* MaterialInstDynamic;
+
+	UPROPERTY(EditAnyWhere)
+	FName NameOfBlendParamter = TEXT("MetalBlendAmount");
+
+	UPROPERTY(EditAnyWhere)
+	int32 MaterialIndex = 0;
+
+	UPROPERTY()
+	UStaticMeshComponent* ChangeMatMesh;
 
 	UPROPERTY(EditAnyWhere)
 	UAudioComponent* AudioComponent = nullptr;

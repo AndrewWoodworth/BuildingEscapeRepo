@@ -9,7 +9,8 @@
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
-#include "Materials/Material.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Materials/MaterialExpressionDynamicParameter.h"
 
 #define OUT
 
@@ -28,9 +29,7 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 
 	DefaultCharacterPtr = Cast<ADefaultCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-
 	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
-
 	DoorRotation = GetOwner()->GetActorRotation();
 	InitialYaw = DoorRotation.Yaw;
 	OpenAngle += InitialYaw;
@@ -148,16 +147,17 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0)) {return;}
 
 	int32 NumCorrectRotations = 0;
-	if (!DefaultCharacterPtr || !DefaultCharacterPtr->ObjectToRotate) {return;}
-	UStaticMeshComponent* ChangeMatMesh = DefaultCharacterPtr->ObjectToRotate->FindComponentByClass<UStaticMeshComponent>();
+	if (!DefaultCharacterPtr || !DefaultCharacterPtr->ObjectToRotate || ChangeMatMesh) {return;}
+	ChangeMatMesh = DefaultCharacterPtr->ObjectToRotate->FindComponentByClass<UStaticMeshComponent>();
+	MaterialInstDynamic = UMaterialInstanceDynamic::Create(ActorCorrectRotationMat, ChangeMatMesh);
+	ChangeMatMesh->SetMaterial(MaterialIndex, MaterialInstDynamic);
 
 	for (int32 i = 0; i < RotatableActors.Num(); i++)
 	{
 		if (RotatableActorsRotations[i] == FMath::RoundToFloat(FMath::Abs(RotatableActors[i]->GetActorRotation().Yaw)))
 		{
 			NumCorrectRotations += 1;
-			ChangeMaterial(0, StatueInCorrectRotationMat, StatueNotInCorrectRotationMat, ChangeMatMesh, DeltaTime);
-			
+			ChangeMaterial(1.f, MaterialInstDynamic, NameOfBlendParamter, ChangeMatMesh, DeltaTime);
 			if (NumCorrectRotations >= RotatableActors.Num())
 			{
 				bRotatableActorsHaveCorrectRotation = true;
@@ -166,20 +166,19 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 		else
 		{
 			bRotatableActorsHaveCorrectRotation = false;
-			ChangeMaterial(0, StatueNotInCorrectRotationMat, StatueInCorrectRotationMat, ChangeMatMesh, DeltaTime);
+			ChangeMaterial(0.f, MaterialInstDynamic, NameOfBlendParamter, ChangeMatMesh, DeltaTime);
 		}
 	}
 }
 
-void UOpenDoor::ChangeMaterial(int32 MaterialIndex, class UMaterial* NewMaterial, class UMaterial* OldMaterial, UStaticMeshComponent* MeshToChangeMatOf, float DeltaTime)
+void UOpenDoor::ChangeMaterial(float MaterialMetalness, class UMaterialInstanceDynamic* MaterialInstDynamic, FName NameOfBlendParamter, UStaticMeshComponent* MeshToChangeMatOf, float DeltaTime)
 {
-	if (NewMaterial && MeshToChangeMatOf && MeshToChangeMatOf->GetMaterial(MaterialIndex) != NewMaterial)
+	if (MaterialInstDynamic && MeshToChangeMatOf)
 	{
-		// class UMaterial* CurrentMaterial;
+		MaterialInstDynamic->GetScalarParameterValue(FMaterialParameterInfo(NameOfBlendParamter), CurrentMetalness);
 
-		// CurrentMaterial = FMath::Lerp(NewMaterial, OldMaterial, .5f * DeltaTime);
-		// NewMaterial = CurrentMaterial;
+		CurrentMetalness = FMath::Lerp(CurrentMetalness, MaterialMetalness, 0.8f * DeltaTime);
 
-		// MeshToChangeMatOf->SetMaterial(MaterialIndex, CurrentMaterial);
+		MaterialInstDynamic->SetScalarParameterValue(NameOfBlendParamter, CurrentMetalness);
 	}
 }

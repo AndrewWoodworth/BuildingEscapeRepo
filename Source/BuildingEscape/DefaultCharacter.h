@@ -21,8 +21,15 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Public Functions
+	void Interact();
+
 	// Public variables
+	UPROPERTY(BlueprintReadWrite)
 	AActor* ObjectToRotate = nullptr;
+	
+	UPROPERTY(BlueprintReadWrite)
+	AActor* Player = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,13 +40,14 @@ protected:
 	void MoveBackward(float Value);
 	void MoveLeft(float Value);
 
-	void Interact();
+	
 	void Grab();
 	void ReleaseGrabbed();
 	void CheckForObjectsToRotate();
 	void RotateObjects(float DeltaTime);
 
 private:
+	// Member Variables
 	bool bIsRotating = false;
 	bool bCanBeGrabbing = false;
 	float TargetRotation;
