@@ -35,7 +35,7 @@ public:
 	void CloseDoor(float DeltaTime);
 	void CheckForPressurePlate() const;
 	void FindAudioComponent();
-	void ChangeMaterial(float MaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, UStaticMeshComponent* MeshToChangeMatOf, float DeltaTime);
+	void ChangeMaterial(float MaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, float DeltaTime);
 
 	// Member Variables
 	bool bCanPlayCloseDoorSound = false;
@@ -44,7 +44,7 @@ public:
 	float CurrentYaw;
 	float DoorLastOpened = 0.f;
 	float InitialYaw;
-	float CurrentMetalness;
+	float CurrentMetalness = 0.f;
 	FRotator DoorRotation;
 	TArray<UObject*> DefaultSubobjects;
 

@@ -147,9 +147,15 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0)) {return;}
 
 	int32 NumCorrectRotations = 0;
-	if (!DefaultCharacterPtr || !DefaultCharacterPtr->ObjectToRotate || ChangeMatMesh) {return;}
+	if (!DefaultCharacterPtr || !DefaultCharacterPtr->ObjectToRotate) {return;}
 	ChangeMatMesh = DefaultCharacterPtr->ObjectToRotate->FindComponentByClass<UStaticMeshComponent>();
-	MaterialInstDynamic = UMaterialInstanceDynamic::Create(ActorCorrectRotationMat, ChangeMatMesh);
+
+	if(!MaterialInstDynamic)
+	{
+		MaterialInstDynamic = UMaterialInstanceDynamic::Create(ActorCorrectRotationMat, ChangeMatMesh);
+	}
+
+	if (!ChangeMatMesh) {return;}
 	ChangeMatMesh->SetMaterial(MaterialIndex, MaterialInstDynamic);
 
 	for (int32 i = 0; i < RotatableActors.Num(); i++)
@@ -157,7 +163,7 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 		if (RotatableActorsRotations[i] == FMath::RoundToFloat(FMath::Abs(RotatableActors[i]->GetActorRotation().Yaw)))
 		{
 			NumCorrectRotations += 1;
-			ChangeMaterial(1.f, MaterialInstDynamic, NameOfBlendParamter, ChangeMatMesh, DeltaTime);
+			ChangeMaterial(1.f, MaterialInstDynamic, NameOfBlendParamter, DeltaTime);
 			if (NumCorrectRotations >= RotatableActors.Num())
 			{
 				bRotatableActorsHaveCorrectRotation = true;
@@ -166,19 +172,29 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 		else
 		{
 			bRotatableActorsHaveCorrectRotation = false;
-			ChangeMaterial(0.f, MaterialInstDynamic, NameOfBlendParamter, ChangeMatMesh, DeltaTime);
+			ChangeMaterial(0.f, MaterialInstDynamic, NameOfBlendParamter, DeltaTime);
 		}
 	}
 }
 
-void UOpenDoor::ChangeMaterial(float MaterialMetalness, class UMaterialInstanceDynamic* MaterialInstDynamic, FName NameOfBlendParamter, UStaticMeshComponent* MeshToChangeMatOf, float DeltaTime)
+void UOpenDoor::ChangeMaterial(float MaterialMetalness, class UMaterialInstanceDynamic* MaterialInstDynamic, FName NameOfBlendParamter, float DeltaTime)
 {
-	if (MaterialInstDynamic && MeshToChangeMatOf)
+	if (MaterialInstDynamic)
 	{
+
+		float MatMetalness;
+
 		MaterialInstDynamic->GetScalarParameterValue(FMaterialParameterInfo(NameOfBlendParamter), CurrentMetalness);
 
-		CurrentMetalness = FMath::Lerp(CurrentMetalness, MaterialMetalness, 0.8f * DeltaTime);
+		MatMetalness = FMath::Lerp(CurrentMetalness, MaterialMetalness, 0.8f * DeltaTime);
+		//CurrentMetalness = MatMetalness;
 
-		MaterialInstDynamic->SetScalarParameterValue(NameOfBlendParamter, CurrentMetalness);
+		//CurrentMetalness += MaterialMetalness*0.1f - CurrentMetalness*0.5f;
+
+		MaterialInstDynamic->SetScalarParameterValue(NameOfBlendParamter, MatMetalness);
+
+		UE_LOG(LogTemp, Warning, TEXT("The statue metalness is: %f"), CurrentMetalness);
+		UE_LOG(LogTemp, Warning, TEXT("The mat metalness is: %f"), MatMetalness);
+		UE_LOG(LogTemp, Warning, TEXT("The statue material is: %s"), *MaterialInstDynamic->GetName());
 	}
 }
