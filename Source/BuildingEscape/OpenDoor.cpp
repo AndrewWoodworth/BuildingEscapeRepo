@@ -147,23 +147,27 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0)) {return;}
 
 	int32 NumCorrectRotations = 0;
-	if (!DefaultCharacterPtr || !DefaultCharacterPtr->ObjectToRotate) {return;}
-	ChangeMatMesh = DefaultCharacterPtr->ObjectToRotate->FindComponentByClass<UStaticMeshComponent>();
+	// if (!DefaultCharacterPtr || !DefaultCharacterPtr->ObjectToRotate) {return;}
+	// ChangeMatMesh = DefaultCharacterPtr->ObjectToRotate->FindComponentByClass<UStaticMeshComponent>();
 
-	if(!MaterialInstDynamic)
-	{
-		MaterialInstDynamic = UMaterialInstanceDynamic::Create(ActorCorrectRotationMat, ChangeMatMesh);
-	}
-
-	if (!ChangeMatMesh) {return;}
-	ChangeMatMesh->SetMaterial(MaterialIndex, MaterialInstDynamic);
 
 	for (int32 i = 0; i < RotatableActors.Num(); i++)
 	{
-		if (RotatableActorsRotations[i] == FMath::RoundToFloat(FMath::Abs(RotatableActors[i]->GetActorRotation().Yaw)))
+		ChangeMatMesh = RotatableActors[i]->FindComponentByClass<UStaticMeshComponent>();
+
+		// !!!!!WARNING!!!!!: MaterialInstDynamic[i] currently crashes.
+		// if (!MaterialInstDynamicArray[i]) {return;}
+		// if (ChangeMatMesh->GetMaterial(MaterialIndex) != MaterialInstDynamicArray[i])
+		// {
+		// // 	MaterialInstDynamicArray.Emplace(UMaterialInstanceDynamic::Create(RotatableActorMat, ChangeMatMesh));
+		// // 	ChangeMatMesh->SetMaterial(MaterialIndex, MaterialInstDynamicArray[i]);
+		// //  UE_LOG(LogTemp, Warning, TEXT("Created dynamic material instance: %s"), *MaterialInstDynamicArray[i]->GetName());
+		// }
+
+		if (FMath::Abs(RotatableActorsRotations[i]) == FMath::RoundToFloat(FMath::Abs(RotatableActors[i]->GetActorRotation().Yaw)))
 		{
 			NumCorrectRotations += 1;
-			ChangeMaterial(1.f, MaterialInstDynamic, NameOfBlendParamter, DeltaTime);
+			ChangeMaterial(1.f, MaterialInstDynamicArray[i], NameOfBlendParamter, DeltaTime);
 			if (NumCorrectRotations >= RotatableActors.Num())
 			{
 				bRotatableActorsHaveCorrectRotation = true;
@@ -172,29 +176,31 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 		else
 		{
 			bRotatableActorsHaveCorrectRotation = false;
-			ChangeMaterial(0.f, MaterialInstDynamic, NameOfBlendParamter, DeltaTime);
+			//ChangeMaterial(0.f, MaterialInstDynamic, NameOfBlendParamter, DeltaTime);
 		}
 	}
 }
 
-void UOpenDoor::ChangeMaterial(float MaterialMetalness, class UMaterialInstanceDynamic* MaterialInstDynamic, FName NameOfBlendParamter, float DeltaTime)
+void UOpenDoor::ChangeMaterial(float NewMaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, float DeltaTime)
 {
-	if (MaterialInstDynamic)
+	if (Material)
 	{
 
 		float MatMetalness;
 
-		MaterialInstDynamic->GetScalarParameterValue(FMaterialParameterInfo(NameOfBlendParamter), CurrentMetalness);
+		Material->GetScalarParameterValue(FMaterialParameterInfo(NameOfBlendParamter), CurrentMetalness);
 
-		MatMetalness = FMath::Lerp(CurrentMetalness, MaterialMetalness, 0.8f * DeltaTime);
+		MatMetalness = FMath::Lerp(CurrentMetalness, NewMaterialMetalness, 0.8f * DeltaTime);
 		//CurrentMetalness = MatMetalness;
 
 		//CurrentMetalness += MaterialMetalness*0.1f - CurrentMetalness*0.5f;
 
-		MaterialInstDynamic->SetScalarParameterValue(NameOfBlendParamter, MatMetalness);
+		Material->SetScalarParameterValue(NameOfBlendParamter, MatMetalness);
 
-		UE_LOG(LogTemp, Warning, TEXT("The statue metalness is: %f"), CurrentMetalness);
-		UE_LOG(LogTemp, Warning, TEXT("The mat metalness is: %f"), MatMetalness);
-		UE_LOG(LogTemp, Warning, TEXT("The statue material is: %s"), *MaterialInstDynamic->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("The statue metalness is: %f"), CurrentMetalness);
+		//UE_LOG(LogTemp, Warning, TEXT("The mat metalness is: %f"), MatMetalness);
+		UE_LOG(LogTemp, Warning, TEXT("The statue's material is: %s"), *ChangeMatMesh->GetMaterial(0)->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("The dynamic mat inst is: %s"), *Material->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("The ActorCorrectRotationMat is: %s"), *RotatableActorMat->GetName());
 	}
 }

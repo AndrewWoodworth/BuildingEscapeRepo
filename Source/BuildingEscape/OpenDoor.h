@@ -35,7 +35,7 @@ public:
 	void CloseDoor(float DeltaTime);
 	void CheckForPressurePlate() const;
 	void FindAudioComponent();
-	void ChangeMaterial(float MaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, float DeltaTime);
+	void ChangeMaterial(float NewMaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, float DeltaTime);
 
 	// Member Variables
 	bool bCanPlayCloseDoorSound = false;
@@ -46,7 +46,6 @@ public:
 	float InitialYaw;
 	float CurrentMetalness = 0.f;
 	FRotator DoorRotation;
-	TArray<UObject*> DefaultSubobjects;
 
 	UPROPERTY(EditAnyWhere)
 	bool bUsePressurePlate = true;
@@ -79,16 +78,16 @@ public:
 	TArray<AActor*> RotatableActors;
 
 	UPROPERTY()
-	class ADefaultCharacter* DefaultCharacterPtr;
+	class ADefaultCharacter* DefaultCharacterPtr = nullptr;
 
 	UPROPERTY(EditAnyWhere)
 	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent0");
 	
 	UPROPERTY(EditAnyWhere)
-	class UMaterial* ActorCorrectRotationMat = nullptr;
+	class UMaterial* RotatableActorMat = nullptr;
 
 	UPROPERTY(EditAnyWhere)
-	class UMaterialInstanceDynamic* MaterialInstDynamic;
+	TArray<UMaterialInstanceDynamic*> MaterialInstDynamicArray;
 
 	UPROPERTY(EditAnyWhere)
 	FName NameOfBlendParamter = TEXT("MetalBlendAmount");
@@ -97,7 +96,7 @@ public:
 	int32 MaterialIndex = 0;
 
 	UPROPERTY()
-	UStaticMeshComponent* ChangeMatMesh;
+	UStaticMeshComponent* ChangeMatMesh = nullptr;
 
 	UPROPERTY(EditAnyWhere)
 	UAudioComponent* AudioComponent = nullptr;
