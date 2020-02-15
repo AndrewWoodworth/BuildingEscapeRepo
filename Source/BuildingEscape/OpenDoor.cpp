@@ -28,15 +28,43 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	DefaultCharacterPtr = Cast<ADefaultCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 	DoorRotation = GetOwner()->GetActorRotation();
 	InitialYaw = DoorRotation.Yaw;
 	OpenAngle += InitialYaw;
 	CurrentYaw = InitialYaw;
 
+	if (bUseRotatableActors) {CheckForRotatableActorMat();}
+	FillMatInstDynamicArray();
+
 	if (bUsePressurePlate) {CheckForPressurePlate();}
 	FindAudioComponent();
+}
+
+void UOpenDoor::CheckForRotatableActorMat() const
+{
+	if (!RotatableActorMat)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s is missing a Rotatable Actor Material!"), *GetOwner()->GetName());
+	}
+}
+
+void UOpenDoor::FillMatInstDynamicArray()
+{
+	if (RotatableActors.Num() != -1 && RotatableActorMat)
+	{
+		MaterialInstDynamicArray.Init(nullptr, RotatableActors.Num());
+		for (int32 i = 0; i < RotatableActors.Num(); i++)	
+		{
+			if (RotatableActors[i])
+			{
+				ChangeMatMesh = RotatableActors[i]->FindComponentByClass<UStaticMeshComponent>();
+				if (!ChangeMatMesh) {return;}
+				MaterialInstDynamicArray[i] = UMaterialInstanceDynamic::Create(RotatableActorMat, ChangeMatMesh);
+				UE_LOG(LogTemp, Warning, TEXT("%s"), *MaterialInstDynamicArray[i]->GetName());
+			}
+		}
+	}
 }
 
 void UOpenDoor::FindAudioComponent()
@@ -62,8 +90,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// TODO: Should a pressure plate and rotatable actors be allowed to open the door at the same time?
-	if (!bUsePressurePlate)
+	if (bUseRotatableActors)
 	{
 		CheckActorsRotations(DeltaTime);
 	}
@@ -144,26 +171,25 @@ bool UOpenDoor::CheckForOveralppingActorThatOpens() const
 
 void UOpenDoor::CheckActorsRotations(float DeltaTime)
 {
-	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0)) {return;}
+	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0) || MaterialInstDynamicArray.Num() == -1 || !RotatableActorMat) {return;}
 
 	int32 NumCorrectRotations = 0;
-	// if (!DefaultCharacterPtr || !DefaultCharacterPtr->ObjectToRotate) {return;}
-	// ChangeMatMesh = DefaultCharacterPtr->ObjectToRotate->FindComponentByClass<UStaticMeshComponent>();
-
-
 	for (int32 i = 0; i < RotatableActors.Num(); i++)
 	{
 		ChangeMatMesh = RotatableActors[i]->FindComponentByClass<UStaticMeshComponent>();
 
-		// !!!!!WARNING!!!!!: MaterialInstDynamic[i] currently crashes.
-		// if (!MaterialInstDynamicArray[i]) {return;}
-		// if (ChangeMatMesh->GetMaterial(MaterialIndex) != MaterialInstDynamicArray[i])
-		// {
-		// // 	MaterialInstDynamicArray.Emplace(UMaterialInstanceDynamic::Create(RotatableActorMat, ChangeMatMesh));
-		// // 	ChangeMatMesh->SetMaterial(MaterialIndex, MaterialInstDynamicArray[i]);
-		// //  UE_LOG(LogTemp, Warning, TEXT("Created dynamic material instance: %s"), *MaterialInstDynamicArray[i]->GetName());
-		// }
-
+		// TODO: possibly make this into a function
+		if (MaterialInstDynamicArray[i] && ChangeMatMesh)
+		{
+			if (ChangeMatMesh->GetMaterial(MaterialIndex) != MaterialInstDynamicArray[i])
+			{
+				MaterialInstDynamicArray[i] = UMaterialInstanceDynamic::Create(RotatableActorMat, ChangeMatMesh);
+				ChangeMatMesh->SetMaterial(MaterialIndex, MaterialInstDynamicArray[i]);
+				UE_LOG(LogTemp, Warning, TEXT("ChangeMatMesh Material is: %s"), *ChangeMatMesh->GetMaterial(MaterialIndex)->GetName());
+				UE_LOG(LogTemp, Warning, TEXT("MaterialInstDynamicArray[i] is: %s"), *MaterialInstDynamicArray[i]->GetName());
+			}
+		}
+		
 		if (FMath::Abs(RotatableActorsRotations[i]) == FMath::RoundToFloat(FMath::Abs(RotatableActors[i]->GetActorRotation().Yaw)))
 		{
 			NumCorrectRotations += 1;
@@ -176,7 +202,7 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 		else
 		{
 			bRotatableActorsHaveCorrectRotation = false;
-			//ChangeMaterial(0.f, MaterialInstDynamic, NameOfBlendParamter, DeltaTime);
+			ChangeMaterial(0.f, MaterialInstDynamicArray[i], NameOfBlendParamter, DeltaTime);
 		}
 	}
 }
@@ -195,7 +221,7 @@ void UOpenDoor::ChangeMaterial(float NewMaterialMetalness, class UMaterialInstan
 
 		//CurrentMetalness += MaterialMetalness*0.1f - CurrentMetalness*0.5f;
 
-		Material->SetScalarParameterValue(NameOfBlendParamter, MatMetalness);
+		Material->SetScalarParameterValue(NameOfBlendParamter, MatMetalness);	
 
 		//UE_LOG(LogTemp, Warning, TEXT("The statue metalness is: %f"), CurrentMetalness);
 		//UE_LOG(LogTemp, Warning, TEXT("The mat metalness is: %f"), MatMetalness);

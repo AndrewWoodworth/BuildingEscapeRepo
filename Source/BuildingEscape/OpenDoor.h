@@ -20,15 +20,14 @@ public:
 
 	// Public Functions
 	void CheckActorsRotations(float DeltaTime);
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+private:
 	bool CheckForOveralppingActorThatOpens() const;
 	float TotalMassOfActors() const;
 	void OpenDoor(float DeltaTime);
@@ -36,6 +35,8 @@ public:
 	void CheckForPressurePlate() const;
 	void FindAudioComponent();
 	void ChangeMaterial(float NewMaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, float DeltaTime);
+	void CheckForRotatableActorMat() const;
+	void FillMatInstDynamicArray();
 
 	// Member Variables
 	bool bCanPlayCloseDoorSound = false;
@@ -51,9 +52,12 @@ public:
 	bool bUsePressurePlate = true;
 
 	UPROPERTY(EditAnyWhere)
-	AActor* ActorThatOpens = nullptr;
+	bool bUseRotatableActors = false;
 
 	UPROPERTY(EditAnyWhere)
+	AActor* ActorThatOpens = nullptr;
+
+	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUsePressurePlate"))
 	ATriggerVolume* PressurePlate = nullptr;
 
 	UPROPERTY(EditAnyWhere)
@@ -66,33 +70,31 @@ public:
 	float DoorOpenSpeed = 0.5f;
 
 	UPROPERTY(EditAnyWhere)
-	float MassToOpenDoor = 50.f;
-
-	UPROPERTY(EditAnyWhere)
 	float OpenAngle = 90.f;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUsePressurePlate"))
+	float MassToOpenDoor = 50.f;
+
+	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
 	TArray<float> RotatableActorsRotations;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
 	TArray<AActor*> RotatableActors;
 
-	UPROPERTY()
-	class ADefaultCharacter* DefaultCharacterPtr = nullptr;
-
-	UPROPERTY(EditAnyWhere)
+	// TODO: This variable Might not be needed
+	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
 	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent0");
 	
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
 	class UMaterial* RotatableActorMat = nullptr;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
 	TArray<UMaterialInstanceDynamic*> MaterialInstDynamicArray;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
 	FName NameOfBlendParamter = TEXT("MetalBlendAmount");
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
 	int32 MaterialIndex = 0;
 
 	UPROPERTY()

@@ -28,9 +28,6 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	AActor* ObjectToRotate = nullptr;
 	
-	UPROPERTY(BlueprintReadWrite)
-	AActor* Player = nullptr;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

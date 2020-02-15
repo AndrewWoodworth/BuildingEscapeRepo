@@ -16,8 +16,6 @@ ADefaultCharacter::ADefaultCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Player = this;
-
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
 	GrabTransform = CreateDefaultSubobject<USceneComponent>(TEXT("GrabPosition"));
 
