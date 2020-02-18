@@ -161,9 +161,14 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 	{
 		ObjectToRotate = ActorHit;
 		ActorRotation = ObjectToRotate->GetActorRotation();
-		TargetRotation = ActorRotation.Yaw + AmountToRotateObject;
 		OriginalActorYaw = ActorRotation.Yaw;
+		TargetRotation = OriginalActorYaw + AmountToRotateObject;
 		bIsRotating = true;
+	}
+
+	if (ActorHit == ObjectToRotate && bIsRotating && FMath::RoundToFloat(ActorRotation.Yaw) != FMath::RoundToFloat(OriginalActorYaw))
+	{
+		TargetRotation += AmountToRotateObject;
 	}
 }
 
@@ -175,9 +180,9 @@ void ADefaultCharacter::RotateObjects(float DeltaTime)
 
 		ObjectToRotate->SetActorRotation(ActorRotation);
 
-		if ((OriginalActorYaw + AmountToRotateObject) - ActorRotation.Yaw < .5f)
+		if (TargetRotation - ActorRotation.Yaw < .4f)
 		{
-			ActorRotation.Yaw = OriginalActorYaw + AmountToRotateObject;
+			ActorRotation.Yaw = TargetRotation;
 			ObjectToRotate->SetActorRotation(ActorRotation);
 			bIsRotating = false;
 		}

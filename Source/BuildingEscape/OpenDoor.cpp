@@ -51,7 +51,7 @@ void UOpenDoor::CheckForRotatableActorMat() const
 
 void UOpenDoor::FillMatInstDynamicArray()
 {
-	if (RotatableActors.Num() != -1 && RotatableActorMat)
+	if (RotatableActors.Num() != -1 && RotatableActorMat && !bIsSecondDoor)
 	{
 		MaterialInstDynamicArray.Init(nullptr, RotatableActors.Num());
 		for (int32 i = 0; i < RotatableActors.Num(); i++)	
@@ -61,7 +61,6 @@ void UOpenDoor::FillMatInstDynamicArray()
 				ChangeMatMesh = RotatableActors[i]->FindComponentByClass<UStaticMeshComponent>();
 				if (!ChangeMatMesh) {return;}
 				MaterialInstDynamicArray[i] = UMaterialInstanceDynamic::Create(RotatableActorMat, ChangeMatMesh);
-				UE_LOG(LogTemp, Warning, TEXT("%s"), *MaterialInstDynamicArray[i]->GetName());
 			}
 		}
 	}
@@ -97,14 +96,18 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 	if (TotalMassOfActors() >= MassToOpenDoor || bRotatableActorsHaveCorrectRotation || CheckForOveralppingActorThatOpens())
 	{
-		OpenDoor(DeltaTime);
-		DoorLastOpened = GetWorld()->GetTimeSeconds();
+		if (GetWorld()->GetTimeSeconds() - DoorLastClosed >= DoorOpenDelay)
+		{
+			OpenDoor(DeltaTime);
+			DoorLastOpened = GetWorld()->GetTimeSeconds();
+		}
 	}
 	else if (CurrentYaw != InitialYaw)
 	{
 		if (GetWorld()->GetTimeSeconds() - DoorLastOpened >= DoorCloseDelay)
 		{
 			CloseDoor(DeltaTime);
+			DoorLastClosed = GetWorld()->GetTimeSeconds();
 		}
 	}
 }
@@ -178,22 +181,19 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 	{
 		ChangeMatMesh = RotatableActors[i]->FindComponentByClass<UStaticMeshComponent>();
 
-		// TODO: possibly make this into a function
-		if (MaterialInstDynamicArray[i] && ChangeMatMesh)
+		if (!bIsSecondDoor)
 		{
-			if (ChangeMatMesh->GetMaterial(MaterialIndex) != MaterialInstDynamicArray[i])
-			{
-				MaterialInstDynamicArray[i] = UMaterialInstanceDynamic::Create(RotatableActorMat, ChangeMatMesh);
-				ChangeMatMesh->SetMaterial(MaterialIndex, MaterialInstDynamicArray[i]);
-				UE_LOG(LogTemp, Warning, TEXT("ChangeMatMesh Material is: %s"), *ChangeMatMesh->GetMaterial(MaterialIndex)->GetName());
-				UE_LOG(LogTemp, Warning, TEXT("MaterialInstDynamicArray[i] is: %s"), *MaterialInstDynamicArray[i]->GetName());
-			}
+			UpdateMatArray(i);
 		}
 		
 		if (FMath::Abs(RotatableActorsRotations[i]) == FMath::RoundToFloat(FMath::Abs(RotatableActors[i]->GetActorRotation().Yaw)))
 		{
 			NumCorrectRotations += 1;
-			ChangeMaterial(1.f, MaterialInstDynamicArray[i], NameOfBlendParamter, DeltaTime);
+			if (!bIsSecondDoor)
+			{
+				ChangeMaterial(1.f, MaterialInstDynamicArray[i], NameOfBlendParamter, DeltaTime);
+			}
+
 			if (NumCorrectRotations >= RotatableActors.Num())
 			{
 				bRotatableActorsHaveCorrectRotation = true;
@@ -202,7 +202,20 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 		else
 		{
 			bRotatableActorsHaveCorrectRotation = false;
+			if (bIsSecondDoor) {return;}
 			ChangeMaterial(0.f, MaterialInstDynamicArray[i], NameOfBlendParamter, DeltaTime);
+		}
+	}
+}
+
+void UOpenDoor::UpdateMatArray(int32 IndexOfArray)
+{
+	if (MaterialInstDynamicArray[IndexOfArray] && ChangeMatMesh && !bIsSecondDoor)
+	{
+		if (ChangeMatMesh->GetMaterial(MaterialIndex) != MaterialInstDynamicArray[IndexOfArray])
+		{
+			MaterialInstDynamicArray[IndexOfArray] = UMaterialInstanceDynamic::Create(RotatableActorMat, ChangeMatMesh);
+			ChangeMatMesh->SetMaterial(MaterialIndex, MaterialInstDynamicArray[IndexOfArray]);
 		}
 	}
 }
@@ -212,21 +225,10 @@ void UOpenDoor::ChangeMaterial(float NewMaterialMetalness, class UMaterialInstan
 	if (Material)
 	{
 
-		float MatMetalness;
-
 		Material->GetScalarParameterValue(FMaterialParameterInfo(NameOfBlendParamter), CurrentMetalness);
 
-		MatMetalness = FMath::Lerp(CurrentMetalness, NewMaterialMetalness, 0.8f * DeltaTime);
-		//CurrentMetalness = MatMetalness;
+		CurrentMetalness = FMath::Lerp(CurrentMetalness, NewMaterialMetalness, 0.8f * DeltaTime);
 
-		//CurrentMetalness += MaterialMetalness*0.1f - CurrentMetalness*0.5f;
-
-		Material->SetScalarParameterValue(NameOfBlendParamter, MatMetalness);	
-
-		//UE_LOG(LogTemp, Warning, TEXT("The statue metalness is: %f"), CurrentMetalness);
-		//UE_LOG(LogTemp, Warning, TEXT("The mat metalness is: %f"), MatMetalness);
-		UE_LOG(LogTemp, Warning, TEXT("The statue's material is: %s"), *ChangeMatMesh->GetMaterial(0)->GetName());
-		UE_LOG(LogTemp, Warning, TEXT("The dynamic mat inst is: %s"), *Material->GetName());
-		UE_LOG(LogTemp, Warning, TEXT("The ActorCorrectRotationMat is: %s"), *RotatableActorMat->GetName());
+		Material->SetScalarParameterValue(NameOfBlendParamter, CurrentMetalness);
 	}
 }

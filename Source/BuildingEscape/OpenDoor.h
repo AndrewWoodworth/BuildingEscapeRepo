@@ -34,6 +34,7 @@ private:
 	void CloseDoor(float DeltaTime);
 	void CheckForPressurePlate() const;
 	void FindAudioComponent();
+	void UpdateMatArray(int32 IndexOfArray);
 	void ChangeMaterial(float NewMaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, float DeltaTime);
 	void CheckForRotatableActorMat() const;
 	void FillMatInstDynamicArray();
@@ -44,6 +45,7 @@ private:
 	bool bRotatableActorsHaveCorrectRotation = false;
 	float CurrentYaw;
 	float DoorLastOpened = 0.f;
+	float DoorLastClosed = 0.f;
 	float InitialYaw;
 	float CurrentMetalness = 0.f;
 	FRotator DoorRotation;
@@ -54,6 +56,9 @@ private:
 	UPROPERTY(EditAnyWhere)
 	bool bUseRotatableActors = false;
 
+	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
+	bool bIsSecondDoor = false;
+
 	UPROPERTY(EditAnyWhere)
 	AActor* ActorThatOpens = nullptr;
 
@@ -62,6 +67,9 @@ private:
 
 	UPROPERTY(EditAnyWhere)
 	float DoorCloseDelay = 0.3f;
+
+	UPROPERTY(EditAnyWhere)
+	float DoorOpenDelay = 0.3f;
 	
 	UPROPERTY(EditAnyWhere)
 	float DoorCloseSpeed = 1.5f;
@@ -80,10 +88,6 @@ private:
 
 	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
 	TArray<AActor*> RotatableActors;
-
-	// TODO: This variable Might not be needed
-	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
-	FName NameOfMeshToChangeMatFor = TEXT("StaticMeshComponent0");
 	
 	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
 	class UMaterial* RotatableActorMat = nullptr;
