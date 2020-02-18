@@ -102,12 +102,14 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 			DoorLastOpened = GetWorld()->GetTimeSeconds();
 		}
 	}
-	else if (CurrentYaw != InitialYaw)
+	else if (!bRotatableActorsHaveCorrectRotation)
 	{
 		if (GetWorld()->GetTimeSeconds() - DoorLastOpened >= DoorCloseDelay)
 		{
 			CloseDoor(DeltaTime);
 			DoorLastClosed = GetWorld()->GetTimeSeconds();
+			UE_LOG(LogTemp, Warning, TEXT("DoorLastClosed is: %f"), DoorLastClosed);
+			UE_LOG(LogTemp, Warning, TEXT("The game time is: %f"), GetWorld()->GetTimeSeconds());
 		}
 	}
 }
@@ -198,11 +200,13 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 			{
 				bRotatableActorsHaveCorrectRotation = true;
 			}
+			else
+			{
+				bRotatableActorsHaveCorrectRotation = false;
+			}
 		}
-		else
+		else if (!bIsSecondDoor)
 		{
-			bRotatableActorsHaveCorrectRotation = false;
-			if (bIsSecondDoor) {return;}
 			ChangeMaterial(0.f, MaterialInstDynamicArray[i], NameOfBlendParamter, DeltaTime);
 		}
 	}
