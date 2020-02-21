@@ -96,6 +96,8 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 	if (TotalMassOfActors() >= MassToOpenDoor || bRotatableActorsHaveCorrectRotation || CheckForOveralppingActorThatOpens())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("DoorLastClosed is: %f"), DoorLastClosed);
+		UE_LOG(LogTemp, Warning, TEXT("The game time is: %f"), GetWorld()->GetTimeSeconds());
 		if (GetWorld()->GetTimeSeconds() - DoorLastClosed >= DoorOpenDelay)
 		{
 			OpenDoor(DeltaTime);
@@ -108,8 +110,6 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		{
 			CloseDoor(DeltaTime);
 			DoorLastClosed = GetWorld()->GetTimeSeconds();
-			UE_LOG(LogTemp, Warning, TEXT("DoorLastClosed is: %f"), DoorLastClosed);
-			UE_LOG(LogTemp, Warning, TEXT("The game time is: %f"), GetWorld()->GetTimeSeconds());
 		}
 	}
 }
