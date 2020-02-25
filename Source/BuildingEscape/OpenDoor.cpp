@@ -80,7 +80,7 @@ void UOpenDoor::CheckForPressurePlate() const
 {
 	if(!PressurePlate)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s has an OpenDoor component attached, but no PressuePlate set."), *GetOwner()->GetName());
+		UE_LOG(LogTemp, Error, TEXT("%s has an OpenDoor component attached, but no Pressue Plate set."), *GetOwner()->GetName());
 	}
 }
 
@@ -176,6 +176,7 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 {
 	if (RotatableActors.Num() == -1 || !RotatableActorsRotations.IsValidIndex(0) || MaterialInstDynamicArray.Num() == -1 || !RotatableActorMat) {return;}
 
+	// Loop through all RotatableActors, change their materials, and check if they have the "correct" rotation.
 	int32 NumCorrectRotations = 0;
 	for (int32 i = 0; i < RotatableActors.Num(); i++)
 	{
@@ -226,7 +227,6 @@ void UOpenDoor::ChangeMaterial(float NewMaterialMetalness, class UMaterialInstan
 {
 	if (Material)
 	{
-
 		Material->GetScalarParameterValue(FMaterialParameterInfo(NameOfBlendParamter), CurrentMetalness);
 
 		CurrentMetalness = FMath::Lerp(CurrentMetalness, NewMaterialMetalness, 0.8f * DeltaTime);

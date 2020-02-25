@@ -53,52 +53,52 @@ private:
 	UPROPERTY(EditAnyWhere)
 	bool bUsePressurePlate = true;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, Category = "Rotatable Actors")
 	bool bUseRotatableActors = false;
 
-	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
+	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUseRotatableActors"))
 	bool bIsSecondDoor = false;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, Category = "Optional")
 	AActor* ActorThatOpens = nullptr;
 
-	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUsePressurePlate"))
+	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUsePressurePlate"))
 	ATriggerVolume* PressurePlate = nullptr;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, Category = "Optional")
 	float DoorCloseDelay = 0.3f;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, Category = "Optional")
 	float DoorOpenDelay = 0.3f;
 	
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, Category = "Optional")
 	float DoorCloseSpeed = 1.5f;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, Category = "Optional")
 	float DoorOpenSpeed = 0.5f;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, Category = "Optional")
 	float OpenAngle = 90.f;
 
-	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUsePressurePlate"))
+	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUsePressurePlate"), Category = "Optional")
 	float MassToOpenDoor = 50.f;
 
-	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
+	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUseRotatableActors"), Category = "Rotatable Actors")
 	TArray<float> RotatableActorsRotations;
 
-	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
+	UPROPERTY(EditAnyWhere, meta=  (EditCondition = "bUseRotatableActors"), Category = "Rotatable Actors")
 	TArray<AActor*> RotatableActors;
 	
-	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
+	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUseRotatableActors"), Category = "Rotatable Actors")
 	class UMaterial* RotatableActorMat = nullptr;
 
-	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
+	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUseRotatableActors"), Category = "Rotatable Actors")
 	TArray<UMaterialInstanceDynamic*> MaterialInstDynamicArray;
 
-	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
+	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUseRotatableActors"), Category = "Rotatable Actors")
 	FName NameOfBlendParamter = TEXT("MetalBlendAmount");
 
-	UPROPERTY(EditAnyWhere, meta=(EditCondition="bUseRotatableActors"))
+	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUseRotatableActors"), Category = "Rotatable Actors")
 	int32 MaterialIndex = 0;
 
 	UPROPERTY()
