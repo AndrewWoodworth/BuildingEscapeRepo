@@ -5,7 +5,6 @@
 #include "Blueprint/UserWidget.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
-#include "GameFramework/PlayerController.h"
 
 // Sets default values for this component's properties
 UWinGameComponent::UWinGameComponent()
@@ -28,6 +27,8 @@ void UWinGameComponent::BeginPlay()
 
 	CheckForWinGameTriggerVolume();
 	CheckForWinScreenWidget();
+
+	FirstPlayerController = GetWorld()->GetFirstPlayerController();
 }
 
 void UWinGameComponent::CheckForWinGameTriggerVolume() const
@@ -52,14 +53,18 @@ void UWinGameComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!WinGameTriggerVolume) {return;}
 	if (WinGameTriggerVolume->IsOverlappingActor(ActorThatWins) && wWinScreen)
 	{
 		WinScreen = CreateWidget<UUserWidget>(GetWorld(), wWinScreen);
-
 		if (WinScreen)
 		{
 			WinScreen->AddToViewport();
+			if (FirstPlayerController)
+			{
+				FirstPlayerController->bShowMouseCursor = true;
+				FirstPlayerController->bEnableClickEvents = true;
+				FirstPlayerController->bEnableMouseOverEvents = true;
+			}
 		}
 	}
 }

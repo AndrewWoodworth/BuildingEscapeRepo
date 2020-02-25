@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Engine/TriggerVolume.h"
+#include "GameFramework/PlayerController.h"
 #include "WinGameComponent.generated.h"
 
 
@@ -38,4 +39,7 @@ public:
 
 	UPROPERTY()
 	UUserWidget* WinScreen;
+
+	UPROPERTY()
+	APlayerController* FirstPlayerController = nullptr;
 };
