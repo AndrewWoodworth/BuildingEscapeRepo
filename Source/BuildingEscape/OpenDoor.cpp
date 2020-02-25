@@ -80,7 +80,7 @@ void UOpenDoor::CheckForPressurePlate() const
 {
 	if(!PressurePlate)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s has an OpenDoor component attached, but no Pressue Plate set."), *GetOwner()->GetName());
+		UE_LOG(LogTemp, Error, TEXT("%s has an OpenDoor component attached, but no Pressure Plate set."), *GetOwner()->GetName());
 	}
 }
 
