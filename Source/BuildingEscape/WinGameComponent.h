@@ -28,6 +28,11 @@ public:
 	void CheckForWinGameTriggerVolume() const;
 	void CheckForWinScreenWidget() const;
 
+	UFUNCTION()
+	void LoadWinLevel();
+
+	FTimerHandle FadeScreenTimerHandle;
+
 	UPROPERTY(EditAnyWhere)
 	ATriggerVolume* WinGameTriggerVolume = nullptr;
 
