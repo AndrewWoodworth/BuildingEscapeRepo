@@ -5,6 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UWinGameComponent::UWinGameComponent()
@@ -55,17 +56,18 @@ void UWinGameComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	if (WinGameTriggerVolume->IsOverlappingActor(ActorThatWins) && wWinScreen)
 	{
-		WinScreen = CreateWidget<UUserWidget>(GetWorld(), wWinScreen);
-		if (WinScreen)
-		{
-			WinScreen->AddToViewport();
-			if (FirstPlayerController)
-			{
-				FirstPlayerController->bShowMouseCursor = true;
-				FirstPlayerController->bEnableClickEvents = true;
-				FirstPlayerController->bEnableMouseOverEvents = true;
-			}
-		}
+		UGameplayStatics::OpenLevel(GetWorld(), FName("WinScreenLevel"), false);
+		// WinScreen = CreateWidget<UUserWidget>(GetWorld(), wWinScreen);
+		// if (WinScreen)
+		// {
+		// 	WinScreen->AddToViewport();
+		// 	if (FirstPlayerController)
+		// 	{
+		// 		FirstPlayerController->bShowMouseCursor = true;
+		// 		FirstPlayerController->bEnableClickEvents = true;
+		// 		FirstPlayerController->bEnableMouseOverEvents = true;
+		// 	}
+		// }
 	}
 }
 
