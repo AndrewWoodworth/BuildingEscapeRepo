@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Andrew Woodworth 2019-2020 All Rights Reserved
 
 
 #include "WinGameComponent.h"
@@ -56,13 +56,11 @@ void UWinGameComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (WinGameTriggerVolume->IsOverlappingActor(ActorThatWins) && wWinScreen)
+	if (WinGameTriggerVolume->IsOverlappingActor(ActorThatWins) && bCanLoadWinLevel)
 	{
-		
-		//UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor(0.f, 0.f, 0.f, 1.f));
-		//GetWorld()->GetTimerManager().SetTimer(FadeScreenTimerHandle, this, UGameplayStatics::OpenLevel(GetWorld(), FName("WinScreenLevel"), false), 3.f, false);
-		UGameplayStatics::OpenLevel(GetWorld(), FName("WinScreenLevel"), false);
-		//UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(1.f, 0.f, 3.f, FLinearColor(0.f, 0.f, 0.f, 1.f));
+		bCanLoadWinLevel = false;
+		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor(0.f, 0.f, 0.f, 1.f), false, true);
+		GetWorld()->GetTimerManager().SetTimer(FadeScreenTimerHandle, this, &UWinGameComponent::LoadWinLevel, 3.f, false);
 	}
 }
 
