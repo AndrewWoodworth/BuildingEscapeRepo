@@ -59,7 +59,7 @@ void UWinGameComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	if (WinGameTriggerVolume->IsOverlappingActor(ActorThatWins) && bCanLoadWinLevel)
 	{
 		bCanLoadWinLevel = false;
-		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor(0.f, 0.f, 0.f, 1.f), false, true);
+		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 2.f, FLinearColor(0.f, 0.f, 0.f, 1.f), false, true);
 		GetWorld()->GetTimerManager().SetTimer(FadeScreenTimerHandle, this, &UWinGameComponent::LoadWinLevel, 3.f, false);
 	}
 }
