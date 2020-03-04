@@ -60,7 +60,7 @@ void UWinGameComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{
 		bCanLoadWinLevel = false;
 		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 2.f, FLinearColor(0.f, 0.f, 0.f, 1.f), false, true);
-		GetWorld()->GetTimerManager().SetTimer(FadeScreenTimerHandle, this, &UWinGameComponent::LoadWinLevel, 3.f, false);
+		GetWorld()->GetTimerManager().SetTimer(FadeScreenTimerHandle, this, &UWinGameComponent::LoadWinLevel, 2.f, false);
 	}
 }
 
