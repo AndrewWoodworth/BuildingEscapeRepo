@@ -1,2 +1,2 @@
-# BuildingEscape
-Stores backup files for UE4 Building Escape project.
+# Escape the Tower
+Stores backup files for UE4 Escape the Tower project.
