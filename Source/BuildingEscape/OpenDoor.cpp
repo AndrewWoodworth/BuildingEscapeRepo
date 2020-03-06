@@ -180,7 +180,15 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 	int32 NumCorrectRotations = 0;
 	for (int32 i = 0; i < RotatableActors.Num(); i++)
 	{
-		ChangeMatMesh = RotatableActors[i]->FindComponentByClass<UStaticMeshComponent>();
+		TArray<UStaticMeshComponent*> StaticComps;
+		RotatableActors[i]->GetComponents<UStaticMeshComponent>(StaticComps);
+		for (UStaticMeshComponent* Component : StaticComps)
+		{
+			if (Component->GetName() == "StaticMeshComponent1")
+			{
+				ChangeMatMesh = Component;
+			}
+		}
 
 		if (!bIsSecondDoor)
 		{

@@ -29,9 +29,6 @@ void UWinGameComponent::BeginPlay()
 	}
 
 	CheckForWinGameTriggerVolume();
-	CheckForWinScreenWidget();
-
-	FirstPlayerController = GetWorld()->GetFirstPlayerController();
 }
 
 void UWinGameComponent::CheckForWinGameTriggerVolume() const
@@ -41,15 +38,6 @@ void UWinGameComponent::CheckForWinGameTriggerVolume() const
 		UE_LOG(LogTemp, Error, TEXT("%s has a WinGameComponent attached but no Win Game Trigger Volume set!"), *GetOwner()->GetName());
 	}
 }
-
-void UWinGameComponent::CheckForWinScreenWidget() const
-{
-	if (!wWinScreen)
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s has a WinGameComponent attached but no Win Screen (widget) set!"), *GetOwner()->GetName());
-	}
-}
-
 
 // Called every frame
 void UWinGameComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

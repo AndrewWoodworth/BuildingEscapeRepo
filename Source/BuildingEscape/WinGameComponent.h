@@ -27,7 +27,6 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void CheckForWinGameTriggerVolume() const;
-	void CheckForWinScreenWidget() const;
 
 	UFUNCTION()
 	void LoadWinLevel();
@@ -40,13 +39,4 @@ public:
 
 	UPROPERTY(EditAnyWhere, Category = "Optional")
 	AActor* ActorThatWins = nullptr;
-
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-	TSubclassOf<class UUserWidget> wWinScreen;
-
-	UPROPERTY()
-	UUserWidget* WinScreen;
-
-	UPROPERTY()
-	APlayerController* FirstPlayerController = nullptr;
 };
