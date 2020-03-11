@@ -85,6 +85,7 @@ BuildingEscape.code-workspace
 
 # Folders added throughout making the project that do not need
 # to be backed up
+Releases
 ProjectZips
 Content/MedievalDungeon/
 Content/Materials/LandscapeLayers/
