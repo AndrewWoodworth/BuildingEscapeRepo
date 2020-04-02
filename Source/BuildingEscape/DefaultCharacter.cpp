@@ -6,6 +6,8 @@
 #include "Components/PrimitiveComponent.h"
 #include "Containers/UnrealString.h"
 #include "Engine/World.h"
+#include "GameFramework/GameMode.h"
+#include "GameFramework/HUD.h"
 #include "GameFramework/PlayerController.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
@@ -28,6 +30,8 @@ ADefaultCharacter::ADefaultCharacter()
 void ADefaultCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//PlayerHUD = &GetWorld()->GetAuthGameMode()->HUDClass;
 }
 
 // Called every frame

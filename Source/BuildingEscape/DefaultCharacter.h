@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+//#include "Templates/SubclassOf.h"
 #include "DefaultCharacter.generated.h"
 
 UCLASS()
@@ -74,4 +75,7 @@ private:
 
 	// Return the ending point for line-tracing
 	FVector GetLineTraceEnd();
+
+	// UPROPERTY()
+	// TSubclassOf<AHUD>* PlayerHUD = nullptr;
 };
