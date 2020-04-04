@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine.h"
+#include "Engine/Engine.h"
 #include "Engine/Texture2D.h"
 #include "GameFramework/Character.h"
 #include "PaperSpriteComponent.h"
@@ -68,7 +68,7 @@ private:
 	// Member Variables
 	bool bIsRotating = false;
 	bool bCanBeGrabbing = false;
-	//const FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
+	FVector2D ViewportSize;
 	float TargetRotation;
 	float OriginalActorYaw;
 	FRotator ActorRotation;
