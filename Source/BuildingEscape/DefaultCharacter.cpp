@@ -216,7 +216,7 @@ void ADefaultCharacter::UpdateReticle()
 {
 	if (CurrentReticleTexture)
 	{
-		PlayerHUD->DrawTexture(CurrentReticleTexture, ViewportSize.X / 2, ViewportSize.Y / 2, 2.0f, 2.0f, 0, 0, 0, 0);
+		//PlayerHUD->DrawTexture(CurrentReticleTexture, ViewportSize.X / 2, ViewportSize.Y / 2, 2.0f, 2.0f, 0, 0, 0, 0);
 	}
 
 	FCollisionQueryParams TraceParams(NAME_None, false, this);

@@ -68,7 +68,7 @@ private:
 	// Member Variables
 	bool bIsRotating = false;
 	bool bCanBeGrabbing = false;
-	const FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
+	//const FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
 	float TargetRotation;
 	float OriginalActorYaw;
 	FRotator ActorRotation;
