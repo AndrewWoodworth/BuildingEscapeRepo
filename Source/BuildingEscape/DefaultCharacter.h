@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/Engine.h"
 #include "Engine/Texture2D.h"
 #include "GameFramework/Character.h"
 #include "PaperSpriteComponent.h"
@@ -61,14 +60,11 @@ protected:
 	void ReleaseGrabbed();
 	void CheckForObjectsToRotate();
 	void RotateObjects(float DeltaTime);
-	void UpdateReticle();
-	void LoadAssets();
 
 private:
 	// Member Variables
 	bool bIsRotating = false;
 	bool bCanBeGrabbing = false;
-	FVector2D ViewportSize;
 	float TargetRotation;
 	float OriginalActorYaw;
 	FRotator ActorRotation;
@@ -77,33 +73,21 @@ private:
 	float LookUpSpeed = 45.f;
 
 	UPROPERTY(EditAnyWhere)
-		float AmountToRotateObject = 90.f;
+	float AmountToRotateObject = 90.f;
 
 	UPROPERTY(EditAnyWhere)
-		float PlayerMass = 60.f;
+	float PlayerMass = 60.f;
 
 	UPROPERTY(EditAnyWhere)
-		float Reach = 200.f;
+	float Reach = 200.f;
 
 	UPROPERTY()
-		USceneComponent* GrabTransform = nullptr;
+	USceneComponent* GrabTransform = nullptr;
 
 	UPROPERTY()
-		class UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	class UPhysicsHandleComponent* PhysicsHandle = nullptr;
 
 	UPROPERTY()
-		class UTexture2D* NotInteractableReticleTexture = nullptr;
-
-	UPROPERTY()
-		class UTexture2D* InteractableReticleTexture = nullptr;
-
-	UPROPERTY()
-		class UTexture2D* CurrentReticleTexture = nullptr;
-
-	UPROPERTY()
-		AHUD* PlayerHUD = nullptr;
-
-	UPROPERTY()
-		UPaperSpriteComponent* EToInteractSprite = nullptr;
+	UPaperSpriteComponent* EToInteractSprite = nullptr;
 
 };

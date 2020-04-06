@@ -11,7 +11,6 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-#include "UObject/ConstructorHelpers.h"
 
 #define OUT
 
@@ -26,17 +25,12 @@ ADefaultCharacter::ADefaultCharacter()
 
 	GrabTransform->SetupAttachment(RootComponent);
 	GrabTransform->SetRelativeLocation(FVector(Reach, 0.f, 70.f));
-
-	//LoadAssets();
 }
 
 // Called when the game starts or when spawned
 void ADefaultCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
-	PlayerHUD = Cast<AHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 }
 
 // Called every frame
@@ -44,29 +38,13 @@ void ADefaultCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UpdateReticle();
-
-	// If the PhysicsHandle is attached move and rotate the PhysicsHandle's target location and target rotation (basically move grabbed object).
+	// If the PhysicsHandle is attached, move and rotate the PhysicsHandle's target location and target rotation (basically move grabbed object).
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocationAndRotation(GetLineTraceEnd(), GrabTransform->GetComponentRotation());
 	}
 
 	RotateObjects(DeltaTime);
-}
-
-void ADefaultCharacter::LoadAssets()
-{
-	//Textures
-	static ConstructorHelpers::FObjectFinder<UTexture2D> NotInteractableReticleTextureObj(
-		TEXT("/Engine/ArtTools/RenderToTexture/Textures/127grey")
-	);
-	NotInteractableReticleTexture = NotInteractableReticleTextureObj.Object;
-
-	static ConstructorHelpers::FObjectFinder<UTexture2D> InteractableReticleTextureObj(
-		TEXT("/Engine/EngineResources/AICON-Red")
-	);
-	InteractableReticleTexture = InteractableReticleTextureObj.Object;
 }
 
 // Called to bind functionality to input
@@ -212,49 +190,5 @@ void ADefaultCharacter::RotateObjects(float DeltaTime)
 			ObjectToRotate->SetActorRotation(ActorRotation);
 			bIsRotating = false;
 		}
-	}
-}
-
-void ADefaultCharacter::UpdateReticle()
-{
-	if (CurrentReticleTexture)
-	{
-		PlayerHUD->DrawTexture(CurrentReticleTexture, ViewportSize.X / 2, ViewportSize.Y / 2, 2.0f, 2.0f, 0, 0, 0, 0);
-	}
-
-	FCollisionQueryParams TraceParams(NAME_None, false, this);
-	FHitResult HitResult;
-
-	GetWorld()->LineTraceSingleByObjectType(
-		HitResult,
-		PlayerViewPointLocation,
-		GetLineTraceEnd(),
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
-		TraceParams
-	);
-	GetWorld()->LineTraceSingleByObjectType(
-		HitResult,
-		PlayerViewPointLocation,
-		GetLineTraceEnd(),
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel2),
-		TraceParams
-	);
-
-	if (InteractableReticleTexture && NotInteractableReticleTexture)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Textures are not null!"));
-		AActor* ActorHit = HitResult.GetActor();
-		if (ActorHit)
-		{
-			CurrentReticleTexture = InteractableReticleTexture;
-		}
-		else
-		{
-			CurrentReticleTexture = NotInteractableReticleTexture;
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Textures are null!!!!!"));
 	}
 }
