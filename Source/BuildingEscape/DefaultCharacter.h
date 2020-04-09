@@ -10,17 +10,17 @@
 #include "UObject/Class.h"
 #include "DefaultCharacter.generated.h"
 
-USTRUCT()
+USTRUCT(meta=(HasNativeMake = "Module.Class.Function"))
 struct FObjectToRotate
 {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 
 
 	UPROPERTY()
-	AActor* ActorToRotate = nullptr;
+	AActor* ActorToRotate;
 
 	UPROPERTY()
-	float ActorRotation;
+	FRotator ActorRotation;
 
 	UPROPERTY()
 	float OriginalActorYaw;
@@ -29,7 +29,17 @@ struct FObjectToRotate
 	float TargetRotation;
 
 	UPROPERTY()
-	bool bIsRotating = false;
+	bool bIsRotating;
+
+	// Default Constructor
+	FObjectToRotate()
+	{
+		ActorToRotate = nullptr;
+		ActorRotation = FRotator(0.0f);
+		OriginalActorYaw = 0.0f;
+		TargetRotation = 0.0f;
+		bIsRotating = false;
+	}
 };
 
 UCLASS()

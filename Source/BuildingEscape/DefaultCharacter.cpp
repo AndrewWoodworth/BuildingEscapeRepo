@@ -61,7 +61,7 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ACharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ACharacter::AddControllerYawInput);
 
-	PlayerInputComponent->BindAction(TEXT("Grab"), IE_Pressed, this, &ADefaultCharacter::Interact);
+	PlayerInputComponent->BindAction(TEXT("Interact"), IE_Pressed, this, &ADefaultCharacter::Interact);
 }
 
 void ADefaultCharacter::MoveForward(float Value)
@@ -100,6 +100,7 @@ void ADefaultCharacter::Interact()
 {
 	if (!PhysicsHandle->GrabbedComponent)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("interact initiated!"))
 		CheckForObjectsToRotate();
 		Grab();
 	}
@@ -160,53 +161,70 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 	);
 
 	AActor* ActorHit = HitResult.GetActor();
-	UPrimitiveComponent* ComponentHit = HitResult.GetComponent();
+	//UPrimitiveComponent* ComponentHit = HitResult.GetComponent();
 
-	if (!bIsRotating && ActorHit)
+	int32 CountOfActorsNotEqual = 0;
+	for (int32 i = 0; i < ObjectsToRotate.Num(); i++)
 	{
-		/*int32 CountOfActorsNotEqual = 0;
-		for (int32 i = 0; i < ObjectsToRotate.Num(); i++)
+		if (!ObjectsToRotate[i].bIsRotating /*<-- TODO: this may crash*/ && ActorHit)
 		{
-			if (ActorHit == ObjectsToRotate[i])
+			UE_LOG(LogTemp, Warning, TEXT("this is text")/*, i*/);
+			if (ActorHit == ObjectsToRotate[i].ActorToRotate)
 			{
 				CountOfActorsNotEqual = 0;
-				ActorHit = ObjectsToRotate[i];
+				ObjectsToRotate[i].ActorRotation = ObjectsToRotate[i].ActorToRotate->GetActorRotation();
+				ObjectsToRotate[i].OriginalActorYaw = ObjectsToRotate[i].ActorRotation.Yaw;
+				ObjectsToRotate[i].TargetRotation = ObjectsToRotate[i].OriginalActorYaw + AmountToRotateObject;
+				ObjectsToRotate[i].bIsRotating = true;
 			}
 			else if (CountOfActorsNotEqual >= ObjectsToRotate.Num() - 1)
 			{
-				ObjectsToRotate.Emplace(ActorHit);
+				FObjectToRotate ObjectToRotateStruct;
+				ObjectToRotateStruct.ActorToRotate = ActorHit;
+				ObjectToRotateStruct.ActorRotation = ObjectToRotateStruct.ActorToRotate->GetActorRotation();
+				ObjectToRotateStruct.OriginalActorYaw = ObjectToRotateStruct.ActorRotation.Yaw;
+				ObjectToRotateStruct.TargetRotation = ObjectToRotateStruct.OriginalActorYaw + AmountToRotateObject;
+				ObjectToRotateStruct.bIsRotating = true;
+				ObjectsToRotate.Emplace(ObjectToRotateStruct);
 			}
 			else
 			{
 				CountOfActorsNotEqual += 1;
 			}
-		}*/
-		ObjectToRotate = ActorHit;
+		}
+		/*ObjectToRotate = ActorHit;
 		ActorRotation = ObjectToRotate->GetActorRotation();
 		OriginalActorYaw = ActorRotation.Yaw;
 		TargetRotation = OriginalActorYaw + AmountToRotateObject;
-		bIsRotating = true;
-	}
-
-	if (ActorHit == ObjectToRotate && bIsRotating && FMath::RoundToFloat(ActorRotation.Yaw) != FMath::RoundToFloat(OriginalActorYaw))
-	{
-		TargetRotation += AmountToRotateObject;
+		bIsRotating = true;*/
+		if (ActorHit == ObjectsToRotate[i].ActorToRotate && ObjectsToRotate[i].bIsRotating
+		&& FMath::RoundToFloat(ObjectsToRotate[i].ActorRotation.Yaw) != FMath::RoundToFloat(ObjectsToRotate[i].OriginalActorYaw))
+		{
+			ObjectsToRotate[i].TargetRotation += AmountToRotateObject;
+		}
 	}
 }
 
 void ADefaultCharacter::RotateObjects(float DeltaTime)
 {
-	if (ObjectToRotate && bIsRotating)
+	// Loop through all the rotatable actors, lerp their rotations, and set their rotations.
+	for (int32 i = 0; i < ObjectsToRotate.Num(); i++)
 	{
-		ActorRotation.Yaw = FMath::Lerp(ActorRotation.Yaw, TargetRotation, 1.6f * DeltaTime);
-
-		ObjectToRotate->SetActorRotation(ActorRotation);
-
-		if (TargetRotation - ActorRotation.Yaw < 0.4f)
+		if (ObjectsToRotate.Num() != -1 && ObjectsToRotate[i].bIsRotating)
 		{
-			ActorRotation.Yaw = TargetRotation;
-			ObjectToRotate->SetActorRotation(ActorRotation);
-			bIsRotating = false;
+			// Lerp the actor's rotation.
+			ObjectsToRotate[i].ActorRotation.Yaw = FMath::Lerp(ObjectsToRotate[i].ActorRotation.Yaw, ObjectsToRotate[i].TargetRotation, 1.6f * DeltaTime);
+
+			// Set the actor's rotation.
+			ObjectsToRotate[i].ActorToRotate->SetActorRotation(ObjectsToRotate[i].ActorRotation);
+
+			// Snap actor's rotation so lerp doesn't go continuously.
+			if (ObjectsToRotate[i].TargetRotation - ObjectsToRotate[i].ActorRotation.Yaw < 0.4f)
+			{
+				ObjectsToRotate[i].ActorRotation.Yaw = ObjectsToRotate[i].TargetRotation;
+				ObjectsToRotate[i].ActorToRotate->SetActorRotation(ObjectsToRotate[i].ActorRotation);
+				ObjectsToRotate[i].bIsRotating = false;
+			}
 		}
 	}
 }
