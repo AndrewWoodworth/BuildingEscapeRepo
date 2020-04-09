@@ -36,7 +36,7 @@ private:
 	void CheckForPressurePlate() const;
 	void FindAudioComponent();
 	void UpdateMatArray(int32 IndexOfArray);
-	void ChangeMaterial(float NewMaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, float DeltaTime);
+	void LerpMaterial(float NewMaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, float DeltaTime);
 	void CheckForRotatableActorMat() const;
 	void FillMatInstDynamicArray();
 

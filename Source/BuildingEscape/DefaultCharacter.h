@@ -7,7 +7,30 @@
 #include "GameFramework/Character.h"
 #include "PaperSpriteComponent.h"
 #include "Templates/SubclassOf.h"
+#include "UObject/Class.h"
 #include "DefaultCharacter.generated.h"
+
+USTRUCT()
+struct FObjectToRotate
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY()
+	AActor* ActorToRotate = nullptr;
+
+	UPROPERTY()
+	float ActorRotation;
+
+	UPROPERTY()
+	float OriginalActorYaw;
+
+	UPROPERTY()
+	float TargetRotation;
+
+	UPROPERTY()
+	bool bIsRotating = false;
+};
 
 UCLASS()
 class BUILDINGESCAPE_API ADefaultCharacter : public ACharacter
@@ -86,6 +109,9 @@ private:
 
 	UPROPERTY()
 	class UPhysicsHandleComponent* PhysicsHandle = nullptr;
+
+	UPROPERTY()
+	TArray<FObjectToRotate> ObjectsToRotate;
 
 	UPROPERTY()
 	UPaperSpriteComponent* EToInteractSprite = nullptr;

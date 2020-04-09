@@ -181,7 +181,7 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 	for (int32 i = 0; i < RotatableActors.Num(); i++)
 	{
 		TArray<UStaticMeshComponent*> StaticComps;
-		RotatableActors[i]->GetComponents<UStaticMeshComponent>(StaticComps);
+		RotatableActors[i]->GetComponents<UStaticMeshComponent>(OUT StaticComps);
 		for (UStaticMeshComponent* Component : StaticComps)
 		{
 			if (Component->GetName() == "StaticMeshComponent1")
@@ -200,7 +200,7 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 			NumCorrectRotations += 1;
 			if (!bIsSecondDoor)
 			{
-				ChangeMaterial(1.f, MaterialInstDynamicArray[i], NameOfBlendParamter, DeltaTime);
+				LerpMaterial(1.f, MaterialInstDynamicArray[i], NameOfBlendParamter, DeltaTime);
 			}
 
 			if (NumCorrectRotations >= RotatableActors.Num())
@@ -214,7 +214,7 @@ void UOpenDoor::CheckActorsRotations(float DeltaTime)
 		}
 		else if (!bIsSecondDoor)
 		{
-			ChangeMaterial(0.f, MaterialInstDynamicArray[i], NameOfBlendParamter, DeltaTime);
+			LerpMaterial(0.f, MaterialInstDynamicArray[i], NameOfBlendParamter, DeltaTime);
 		}
 	}
 }
@@ -223,6 +223,8 @@ void UOpenDoor::UpdateMatArray(int32 IndexOfArray)
 {
 	if (MaterialInstDynamicArray[IndexOfArray] && ChangeMatMesh && !bIsSecondDoor)
 	{
+		/* Set a new material on the Mesh that needs a new material (ChangeMatMesh) 
+		if the material is not a dynamic material derived from RotatableActorMat. */
 		if (ChangeMatMesh->GetMaterial(MaterialIndex) != MaterialInstDynamicArray[IndexOfArray])
 		{
 			MaterialInstDynamicArray[IndexOfArray] = UMaterialInstanceDynamic::Create(RotatableActorMat, ChangeMatMesh);
@@ -231,7 +233,7 @@ void UOpenDoor::UpdateMatArray(int32 IndexOfArray)
 	}
 }
 
-void UOpenDoor::ChangeMaterial(float NewMaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, float DeltaTime)
+void UOpenDoor::LerpMaterial(float NewMaterialMetalness, class UMaterialInstanceDynamic* Material, FName NameOfBlendParamter, float DeltaTime)
 {
 	if (Material)
 	{

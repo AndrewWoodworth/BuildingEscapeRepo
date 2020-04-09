@@ -4,6 +4,7 @@
 #include "DefaultCharacter.h"
 #include "Components/InputComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "Containers/Array.h"
 #include "Containers/UnrealString.h"
 #include "Engine/World.h"
 #include "GameFramework/GameMode.h"
@@ -163,6 +164,23 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 
 	if (!bIsRotating && ActorHit)
 	{
+		/*int32 CountOfActorsNotEqual = 0;
+		for (int32 i = 0; i < ObjectsToRotate.Num(); i++)
+		{
+			if (ActorHit == ObjectsToRotate[i])
+			{
+				CountOfActorsNotEqual = 0;
+				ActorHit = ObjectsToRotate[i];
+			}
+			else if (CountOfActorsNotEqual >= ObjectsToRotate.Num() - 1)
+			{
+				ObjectsToRotate.Emplace(ActorHit);
+			}
+			else
+			{
+				CountOfActorsNotEqual += 1;
+			}
+		}*/
 		ObjectToRotate = ActorHit;
 		ActorRotation = ObjectToRotate->GetActorRotation();
 		OriginalActorYaw = ActorRotation.Yaw;
@@ -184,7 +202,7 @@ void ADefaultCharacter::RotateObjects(float DeltaTime)
 
 		ObjectToRotate->SetActorRotation(ActorRotation);
 
-		if (TargetRotation - ActorRotation.Yaw < .4f)
+		if (TargetRotation - ActorRotation.Yaw < 0.4f)
 		{
 			ActorRotation.Yaw = TargetRotation;
 			ObjectToRotate->SetActorRotation(ActorRotation);
