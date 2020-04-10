@@ -10,7 +10,7 @@
 #include "UObject/Class.h"
 #include "DefaultCharacter.generated.h"
 
-USTRUCT(meta=(HasNativeMake = "Module.Class.Function"))
+USTRUCT()
 struct FObjectToRotate
 {
 	GENERATED_USTRUCT_BODY()
@@ -31,13 +31,13 @@ struct FObjectToRotate
 	UPROPERTY()
 	bool bIsRotating;
 
-	// Default Constructor
+	// Default constructor.
 	FObjectToRotate()
 	{
 		ActorToRotate = nullptr;
-		ActorRotation = FRotator(0.0f);
-		OriginalActorYaw = 0.0f;
-		TargetRotation = 0.0f;
+		ActorRotation = FRotator(-1.0f);
+		OriginalActorYaw = -1.0f;
+		TargetRotation = -1.0f;
 		bIsRotating = false;
 	}
 };
@@ -62,19 +62,19 @@ public:
 
 	// Public variables
 	UPROPERTY(BlueprintReadOnly)
-		AActor* ObjectToRotate = nullptr;
+	AActor* ActorToGrab = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-		AActor* ActorToGrab = nullptr;
+	FRotator PlayerViewPointRotation;
 
 	UPROPERTY(BlueprintReadOnly)
-		FRotator PlayerViewPointRotation;
-
-	UPROPERTY(BlueprintReadOnly)
-		FVector PlayerViewPointLocation;
+	FVector PlayerViewPointLocation;
 
 	UPROPERTY(BlueprintReadWrite)
-		FVector LineTraceEnd;
+	FVector LineTraceEnd;
+
+	UPROPERTY()
+	TArray<FObjectToRotate> ObjectsToRotate;
 
 	// Return the ending point for line-tracing
 	UFUNCTION(BlueprintCallable)
@@ -119,9 +119,6 @@ private:
 
 	UPROPERTY()
 	class UPhysicsHandleComponent* PhysicsHandle = nullptr;
-
-	UPROPERTY()
-	TArray<FObjectToRotate> ObjectsToRotate;
 
 	UPROPERTY()
 	UPaperSpriteComponent* EToInteractSprite = nullptr;

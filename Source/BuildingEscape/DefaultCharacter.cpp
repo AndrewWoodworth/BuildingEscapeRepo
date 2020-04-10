@@ -32,6 +32,9 @@ ADefaultCharacter::ADefaultCharacter()
 void ADefaultCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Fill the ObjectsToRotate array with empty structs.
+	ObjectsToRotate.Insert(FObjectToRotate(), ObjectsToRotate.Num());
 }
 
 // Called every frame
@@ -100,7 +103,6 @@ void ADefaultCharacter::Interact()
 {
 	if (!PhysicsHandle->GrabbedComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("interact initiated!"))
 		CheckForObjectsToRotate();
 		Grab();
 	}
@@ -161,14 +163,12 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 	);
 
 	AActor* ActorHit = HitResult.GetActor();
-	//UPrimitiveComponent* ComponentHit = HitResult.GetComponent();
-
+	UE_LOG(LogTemp, Warning, TEXT("%i"), ObjectsToRotate.Num());
 	int32 CountOfActorsNotEqual = 0;
 	for (int32 i = 0; i < ObjectsToRotate.Num(); i++)
 	{
-		if (!ObjectsToRotate[i].bIsRotating /*<-- TODO: this may crash*/ && ActorHit)
+		if (!ObjectsToRotate[i].bIsRotating && ActorHit)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("this is text")/*, i*/);
 			if (ActorHit == ObjectsToRotate[i].ActorToRotate)
 			{
 				CountOfActorsNotEqual = 0;
@@ -192,11 +192,6 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 				CountOfActorsNotEqual += 1;
 			}
 		}
-		/*ObjectToRotate = ActorHit;
-		ActorRotation = ObjectToRotate->GetActorRotation();
-		OriginalActorYaw = ActorRotation.Yaw;
-		TargetRotation = OriginalActorYaw + AmountToRotateObject;
-		bIsRotating = true;*/
 		if (ActorHit == ObjectsToRotate[i].ActorToRotate && ObjectsToRotate[i].bIsRotating
 		&& FMath::RoundToFloat(ObjectsToRotate[i].ActorRotation.Yaw) != FMath::RoundToFloat(ObjectsToRotate[i].OriginalActorYaw))
 		{

@@ -34,6 +34,9 @@ void UOpenDoor::BeginPlay()
 	OpenAngle += InitialYaw;
 	CurrentYaw = InitialYaw;
 
+	PlayerPtr = Cast<ADefaultCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	PlayerPtr->ObjectsToRotate.Init(FObjectToRotate(), RotatableActors.Num());
+
 	if (bUseRotatableActors) {CheckForRotatableActorMat();}
 	FillMatInstDynamicArray();
 

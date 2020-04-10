@@ -51,6 +51,15 @@ private:
 	float CurrentMetalness = 0.f;
 	FRotator DoorRotation;
 
+	UPROPERTY(EditAnyWhere, Category = "Optional")
+	AActor* ActorThatOpens = nullptr;
+
+	UPROPERTY()
+	ADefaultCharacter* PlayerPtr = nullptr;
+
+	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUsePressurePlate"))
+	ATriggerVolume* PressurePlate = nullptr;
+
 	UPROPERTY(EditAnyWhere)
 	bool bUsePressurePlate = true;
 
@@ -59,12 +68,6 @@ private:
 
 	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUseRotatableActors"))
 	bool bIsSecondDoor = false;
-
-	UPROPERTY(EditAnyWhere, Category = "Optional")
-	AActor* ActorThatOpens = nullptr;
-
-	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUsePressurePlate"))
-	ATriggerVolume* PressurePlate = nullptr;
 
 	UPROPERTY(EditAnyWhere, Category = "Optional")
 	float DoorCloseDelay = 0.3f;
