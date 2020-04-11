@@ -32,9 +32,6 @@ ADefaultCharacter::ADefaultCharacter()
 void ADefaultCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Fill the ObjectsToRotate array with empty structs.
-	ObjectsToRotate.Insert(FObjectToRotate(), ObjectsToRotate.Num());
 }
 
 // Called every frame
@@ -163,39 +160,58 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 	);
 
 	AActor* ActorHit = HitResult.GetActor();
-	UE_LOG(LogTemp, Warning, TEXT("%i"), ObjectsToRotate.Num());
-	int32 CountOfActorsNotEqual = 0;
+	if (!ActorHit) {return;}
+
+	bool bShouldMakeNewStruct = true;
+	// Loop through all ObjectsToRotate and check if any new objects need to be added to the array or if any existing objects need values updated.
 	for (int32 i = 0; i < ObjectsToRotate.Num(); i++)
 	{
-		if (!ObjectsToRotate[i].bIsRotating && ActorHit)
+		// Check if the actor of the struct at the current index is a nullptr.
+		// If not check if the ActorHit is equal to the actor of the struct at the current index;
+		if (!ObjectsToRotate[i].ActorToRotate)
 		{
-			if (ActorHit == ObjectsToRotate[i].ActorToRotate)
+			// Check if the value of ActorHit is in the array already.
+			// Based on that check we will know if we should make a new struct in this current iteration of the "i" for loop.
+			for (int32 j = 0; j < ObjectsToRotate.Num(); j++)
 			{
-				CountOfActorsNotEqual = 0;
-				ObjectsToRotate[i].ActorRotation = ObjectsToRotate[i].ActorToRotate->GetActorRotation();
-				ObjectsToRotate[i].OriginalActorYaw = ObjectsToRotate[i].ActorRotation.Yaw;
-				ObjectsToRotate[i].TargetRotation = ObjectsToRotate[i].OriginalActorYaw + AmountToRotateObject;
-				ObjectsToRotate[i].bIsRotating = true;
-			}
-			else if (CountOfActorsNotEqual >= ObjectsToRotate.Num() - 1)
-			{
-				FObjectToRotate ObjectToRotateStruct;
-				ObjectToRotateStruct.ActorToRotate = ActorHit;
-				ObjectToRotateStruct.ActorRotation = ObjectToRotateStruct.ActorToRotate->GetActorRotation();
-				ObjectToRotateStruct.OriginalActorYaw = ObjectToRotateStruct.ActorRotation.Yaw;
-				ObjectToRotateStruct.TargetRotation = ObjectToRotateStruct.OriginalActorYaw + AmountToRotateObject;
-				ObjectToRotateStruct.bIsRotating = true;
-				ObjectsToRotate.Emplace(ObjectToRotateStruct);
-			}
-			else
-			{
-				CountOfActorsNotEqual += 1;
+				if (ActorHit == ObjectsToRotate[j].ActorToRotate)
+				{
+					bShouldMakeNewStruct = false;
+					break; // <-- Get out of current loop.
+				}
 			}
 		}
-		if (ActorHit == ObjectsToRotate[i].ActorToRotate && ObjectsToRotate[i].bIsRotating
+		else if (ActorHit == ObjectsToRotate[i].ActorToRotate)
+		{
+			// Do not make a new struct in the current iteration of the "i" for loop.
+			bShouldMakeNewStruct = false;
+		}
+
+		if (!ObjectsToRotate[i].bIsRotating && ActorHit == ObjectsToRotate[i].ActorToRotate)
+		{
+			// Update struct at current index in ObjectsToRotate array.
+			ObjectsToRotate[i].ActorRotation = ObjectsToRotate[i].ActorToRotate->GetActorRotation();
+			ObjectsToRotate[i].OriginalActorYaw = ObjectsToRotate[i].ActorRotation.Yaw;
+			ObjectsToRotate[i].TargetRotation = ObjectsToRotate[i].OriginalActorYaw + AmountToRotateActor;
+			ObjectsToRotate[i].bIsRotating = true;
+		}
+		else if (bShouldMakeNewStruct && !ObjectsToRotate[i].bIsRotating && !ObjectsToRotate[i].ActorToRotate)
+		{
+			// Set up new struct and place the new struct in ObjectsToRotate array at the current index.
+			FObjectToRotate ObjectToRotateStruct;
+			ObjectToRotateStruct.ActorToRotate = ActorHit;
+			ObjectToRotateStruct.ActorRotation = ObjectToRotateStruct.ActorToRotate->GetActorRotation();
+			ObjectToRotateStruct.OriginalActorYaw = ObjectToRotateStruct.ActorRotation.Yaw;
+			ObjectToRotateStruct.TargetRotation = ObjectToRotateStruct.OriginalActorYaw + AmountToRotateActor;
+			ObjectToRotateStruct.bIsRotating = true;
+			ObjectsToRotate[i] = ObjectToRotateStruct;
+		}
+		else if (ActorHit == ObjectsToRotate[i].ActorToRotate && ObjectsToRotate[i].bIsRotating
 		&& FMath::RoundToFloat(ObjectsToRotate[i].ActorRotation.Yaw) != FMath::RoundToFloat(ObjectsToRotate[i].OriginalActorYaw))
 		{
-			ObjectsToRotate[i].TargetRotation += AmountToRotateObject;
+			// Add AmountToRotateObject to the target rotation of the current ActorToRotate because the player
+			// interacted with the object while it was rotating.
+			ObjectsToRotate[i].TargetRotation += AmountToRotateActor;
 		}
 	}
 }
@@ -214,7 +230,7 @@ void ADefaultCharacter::RotateObjects(float DeltaTime)
 			ObjectsToRotate[i].ActorToRotate->SetActorRotation(ObjectsToRotate[i].ActorRotation);
 
 			// Snap actor's rotation so lerp doesn't go continuously.
-			if (ObjectsToRotate[i].TargetRotation - ObjectsToRotate[i].ActorRotation.Yaw < 0.4f)
+			if (FMath::Abs(ObjectsToRotate[i].TargetRotation - ObjectsToRotate[i].ActorRotation.Yaw) < 0.4f)
 			{
 				ObjectsToRotate[i].ActorRotation.Yaw = ObjectsToRotate[i].TargetRotation;
 				ObjectsToRotate[i].ActorToRotate->SetActorRotation(ObjectsToRotate[i].ActorRotation);

@@ -106,7 +106,7 @@ private:
 	float LookUpSpeed = 45.f;
 
 	UPROPERTY(EditAnyWhere)
-	float AmountToRotateObject = 90.f;
+	float AmountToRotateActor = 90.f;
 
 	UPROPERTY(EditAnyWhere)
 	float PlayerMass = 60.f;
