@@ -20,7 +20,10 @@ struct FObjectToRotate
 	AActor* ActorToRotate;
 
 	UPROPERTY()
-	FRotator ActorRotation;
+	bool bIsPlayingSound;
+
+	UPROPERTY()
+	bool bIsRotating;
 
 	UPROPERTY()
 	float OriginalActorYaw;
@@ -29,16 +32,21 @@ struct FObjectToRotate
 	float TargetRotation;
 
 	UPROPERTY()
-	bool bIsRotating;
+	FRotator ActorRotation;
+
+	UPROPERTY()
+	UAudioComponent* AudioComp;
 
 	// Default constructor.
 	FObjectToRotate()
 	{
-		ActorToRotate = nullptr;
 		ActorRotation = FRotator(-1.0f);
+		ActorToRotate = nullptr;
+		AudioComp = nullptr;
+		bIsPlayingSound = false;
+		bIsRotating = false;
 		OriginalActorYaw = -1.0f;
 		TargetRotation = -1.0f;
-		bIsRotating = false;
 	}
 };
 
