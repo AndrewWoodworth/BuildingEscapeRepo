@@ -197,9 +197,8 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 			ObjectsToRotate[i].bIsRotating = true;
 			
 			// Play sound effect.
-			/*if (!ObjectsToRotate[i].AudioComp) {return;}
+			if (!ObjectsToRotate[i].AudioComp) {return;}
 			ObjectsToRotate[i].AudioComp->Play();
-			ObjectsToRotate[i].bIsPlayingSound = true;*/
 		}
 		else if (bShouldMakeNewStruct && !ObjectsToRotate[i].bIsRotating && !ObjectsToRotate[i].ActorToRotate)
 		{
@@ -214,9 +213,8 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 			ObjectsToRotate[i] = ObjectToRotateStruct;
 			
 			// Play sound effect.
-			/*if (!ObjectsToRotate[i].AudioComp) {return;}
+			if (!ObjectsToRotate[i].AudioComp) {return;}
 			ObjectsToRotate[i].AudioComp->Play();
-			ObjectsToRotate[i].bIsPlayingSound = true;*/
 		}
 		else if (ActorHit == ObjectsToRotate[i].ActorToRotate && ObjectsToRotate[i].bIsRotating
 		&& FMath::RoundToFloat(ObjectsToRotate[i].ActorRotation.Yaw) != FMath::RoundToFloat(ObjectsToRotate[i].OriginalActorYaw))
@@ -224,18 +222,12 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 			// Add AmountToRotateObject to the target rotation of the current ActorToRotate because the player
 			// interacted with the object while it was rotating.
 			ObjectsToRotate[i].TargetRotation += AmountToRotateActor;
-			//UE_LOG(LogTemp, Warning, TEXT("Updating rotation.")); // <--- TODO: test code
-			//// Play sound effect.
-			//if (!ObjectsToRotate[i].bIsPlayingSound && ObjectsToRotate[i].AudioComp)
-			//{
-			//	ObjectsToRotate[i].AudioComp->Play();
-			//	UE_LOG(LogTemp, Warning, TEXT("Audio should play."));// <--- TODO: test code
-			//}
-			//else if (ObjectsToRotate[i].bIsPlayingSound && ObjectsToRotate[i].AudioComp)
-			//{
-			//	ObjectsToRotate[i].AudioComp->FadeIn(0.0f, 1.0f);
-			//	UE_LOG(LogTemp, Warning, TEXT("Audio should fade in."));// <--- TODO: test code
-			//}
+
+			// Play sound effect.
+			if (!ObjectsToRotate[i].AudioComp->IsPlaying() && ObjectsToRotate[i].AudioComp)
+			{
+				ObjectsToRotate[i].AudioComp->Play();
+			}
 		}
 	}
 }
@@ -253,12 +245,6 @@ void ADefaultCharacter::RotateObjects(float DeltaTime)
 			// Set the actor's rotation.
 			ObjectsToRotate[i].ActorToRotate->SetActorRotation(ObjectsToRotate[i].ActorRotation);
 
-			// Fade sound effect.
-			/*if (ObjectsToRotate[i].AudioComp && FMath::Abs(ObjectsToRotate[i].TargetRotation - ObjectsToRotate[i].ActorRotation.Yaw) < 20.0f)
-			{
-				ObjectsToRotate[i].AudioComp->FadeOut(1.0f, 0.1f);
-			}*/
-
 			// Snap actor's rotation so lerp doesn't go continuously.
 			if (FMath::Abs(ObjectsToRotate[i].TargetRotation - ObjectsToRotate[i].ActorRotation.Yaw) < 0.4f)
 			{
@@ -267,11 +253,10 @@ void ADefaultCharacter::RotateObjects(float DeltaTime)
 				ObjectsToRotate[i].bIsRotating = false;
 
 				// Stop sound effect
-				/*if (ObjectsToRotate[i].AudioComp)
+				if (ObjectsToRotate[i].AudioComp)
 				{
 					ObjectsToRotate[i].AudioComp->Stop();
-					ObjectsToRotate[i].bIsPlayingSound = false;
-				}*/
+				}
 			}
 		}
 	}

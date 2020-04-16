@@ -20,9 +20,6 @@ struct FObjectToRotate
 	AActor* ActorToRotate;
 
 	UPROPERTY()
-	bool bIsPlayingSound;
-
-	UPROPERTY()
 	bool bIsRotating;
 
 	UPROPERTY()
@@ -43,7 +40,6 @@ struct FObjectToRotate
 		ActorRotation = FRotator(-1.0f);
 		ActorToRotate = nullptr;
 		AudioComp = nullptr;
-		bIsPlayingSound = false;
 		bIsRotating = false;
 		OriginalActorYaw = -1.0f;
 		TargetRotation = -1.0f;
