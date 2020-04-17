@@ -10,7 +10,7 @@
 #include "UObject/Class.h"
 #include "DefaultCharacter.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FObjectToRotate
 {
 	GENERATED_USTRUCT_BODY()
@@ -77,7 +77,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FVector LineTraceEnd;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	TArray<FObjectToRotate> ObjectsToRotate;
 
 	// Return the ending point for line-tracing
@@ -102,12 +102,14 @@ private:
 	// Member Variables
 	bool bIsRotating = false;
 	bool bCanBeGrabbing = false;
+	float TurnSpeed = 45.f;
+	float LookUpSpeed = 45.f;
 	float TargetRotation;
 	float OriginalActorYaw;
 	FRotator ActorRotation;
 
-	float TurnSpeed = 45.f;
-	float LookUpSpeed = 45.f;
+	UPROPERTY()
+	class UPhysicsHandleComponent* PhysicsHandle = nullptr;
 
 	UPROPERTY(EditAnyWhere)
 	float AmountToRotateActor = 90.f;
@@ -118,11 +120,11 @@ private:
 	UPROPERTY(EditAnyWhere)
 	float Reach = 200.f;
 
-	UPROPERTY()
-	USceneComponent* GrabTransform = nullptr;
+	UPROPERTY(EditAnyWhere, meta = (category = "Rotatable Actors"))
+	int32 NumberOfRotatableActors = 4;
 
 	UPROPERTY()
-	class UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	USceneComponent* GrabTransform = nullptr;
 
 	UPROPERTY()
 	UPaperSpriteComponent* EToInteractSprite = nullptr;

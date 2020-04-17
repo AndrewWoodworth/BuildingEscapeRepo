@@ -54,9 +54,6 @@ private:
 	UPROPERTY(EditAnyWhere, Category = "Optional")
 	AActor* ActorThatOpens = nullptr;
 
-	UPROPERTY()
-	ADefaultCharacter* PlayerPtr = nullptr;
-
 	UPROPERTY(EditAnyWhere, meta = (EditCondition = "bUsePressurePlate"))
 	ATriggerVolume* PressurePlate = nullptr;
 

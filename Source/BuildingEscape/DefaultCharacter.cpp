@@ -33,6 +33,9 @@ ADefaultCharacter::ADefaultCharacter()
 void ADefaultCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Fill ObjectsToRotate with "blank" FObjectToRotate structs.
+	ObjectsToRotate.Init(FObjectToRotate(), NumberOfRotatableActors);
 }
 
 // Called every frame
@@ -163,7 +166,6 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 	AActor* ActorHit = HitResult.GetActor();
 	if (!ActorHit) {return;}
 
-	UE_LOG(LogTemp, Warning, TEXT("ActorHit is not null."));
 	bool bShouldMakeNewStruct = true;
 	// Loop through all ObjectsToRotate and check if any new objects need to be added to the array or if any existing objects need values updated.
 	for (int32 i = 0; i < ObjectsToRotate.Num(); i++)
@@ -212,7 +214,6 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 			ObjectToRotateStruct.TargetRotation = ObjectToRotateStruct.OriginalActorYaw + AmountToRotateActor;
 			ObjectToRotateStruct.bIsRotating = true;
 			ObjectsToRotate[i] = ObjectToRotateStruct;
-			UE_LOG(LogTemp, Warning, TEXT("Made a new struct."));
 			
 			// Play sound effect.
 			if (!ObjectsToRotate[i].AudioComp) {return;}
