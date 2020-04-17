@@ -163,6 +163,7 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 	AActor* ActorHit = HitResult.GetActor();
 	if (!ActorHit) {return;}
 
+	UE_LOG(LogTemp, Warning, TEXT("ActorHit is not null."));
 	bool bShouldMakeNewStruct = true;
 	// Loop through all ObjectsToRotate and check if any new objects need to be added to the array or if any existing objects need values updated.
 	for (int32 i = 0; i < ObjectsToRotate.Num(); i++)
@@ -211,6 +212,7 @@ void ADefaultCharacter::CheckForObjectsToRotate()
 			ObjectToRotateStruct.TargetRotation = ObjectToRotateStruct.OriginalActorYaw + AmountToRotateActor;
 			ObjectToRotateStruct.bIsRotating = true;
 			ObjectsToRotate[i] = ObjectToRotateStruct;
+			UE_LOG(LogTemp, Warning, TEXT("Made a new struct."));
 			
 			// Play sound effect.
 			if (!ObjectsToRotate[i].AudioComp) {return;}
@@ -244,6 +246,12 @@ void ADefaultCharacter::RotateObjects(float DeltaTime)
 
 			// Set the actor's rotation.
 			ObjectsToRotate[i].ActorToRotate->SetActorRotation(ObjectsToRotate[i].ActorRotation);
+
+			// Fade sound effect.
+			if (ObjectsToRotate[i].AudioComp && FMath::Abs(ObjectsToRotate[i].TargetRotation - ObjectsToRotate[i].ActorRotation.Yaw) < 15.0f)
+			{
+				ObjectsToRotate[i].AudioComp->FadeOut(1.0f, 0.0f);
+			}
 
 			// Snap actor's rotation so lerp doesn't go continuously.
 			if (FMath::Abs(ObjectsToRotate[i].TargetRotation - ObjectsToRotate[i].ActorRotation.Yaw) < 0.4f)
